@@ -1,10 +1,12 @@
-package org.darkmentat.draftrecorder;
+package org.darkmentat.draftrecorder.ui.activities;
 
 import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.widget.TextView;
 
 
+import org.darkmentat.draftrecorder.BuildConfig;
+import org.darkmentat.draftrecorder.R;
 import org.darkmentat.draftrecorder.domain.Record;
 import org.darkmentat.draftrecorder.domain.RecordRepository;
 import org.darkmentat.draftrecorder.ui.activities.RecordsActivity;
