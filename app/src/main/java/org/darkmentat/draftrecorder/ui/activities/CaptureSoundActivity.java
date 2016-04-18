@@ -10,6 +10,7 @@ import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
 import org.darkmentat.draftrecorder.R;
+import org.darkmentat.draftrecorder.media.Player;
 import org.darkmentat.draftrecorder.media.Recorder;
 import org.darkmentat.draftrecorder.ui.adapters.RecordsAdapter;
 
@@ -21,7 +22,14 @@ public class CaptureSoundActivity extends AppCompatActivity {
   @ViewById(R.id.stop_sound) Button mStopSound;
 
   Recorder mRecorder;
+  Player mPlayer;
 
+  @Bean
+  public void setPlayer(Player player){
+    if(mPlayer == null) mPlayer = player;
+
+    mPlayer.setFileName("test_mic.mp3");
+  }
   @Bean
   public void setRecorder(Recorder recorder){
     if(mRecorder == null) mRecorder = recorder;
@@ -39,10 +47,10 @@ public class CaptureSoundActivity extends AppCompatActivity {
   }
   @Click(R.id.play_sound)
   protected void onPlaySound(){
-
+    mPlayer.playStart();
   }
   @Click(R.id.stop_sound)
   protected void onStopSound(){
-
+    mPlayer.playStop();
   }
 }
