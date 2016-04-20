@@ -37,7 +37,10 @@ import org.androidannotations.annotations.EBean;
 @EBean
 public class Metronome {
 
-  private final static int TICK = 1000; // samples of tick
+  public static final String TICK = "Tick";
+  public static final String TOCK = "Tock";
+
+  private final static int TICK_SAMPLES = 1000; // samples of tick
 
   private double mBpm;
   private int mBeat;
@@ -65,16 +68,16 @@ public class Metronome {
   }
 
   private void calcSilence() {
-    int silence = (int) (((60 / (mBpm * mBeatLength / 4)) * 8000) - TICK);
+    int silence = (int) (((60 / (mBpm * mBeatLength / 4)) * 8000) - TICK_SAMPLES);
 
-    soundTickArray = new double[TICK];
-    soundTockArray = new double[TICK];
+    soundTickArray = new double[TICK_SAMPLES];
+    soundTockArray = new double[TICK_SAMPLES];
     silenceSoundArray = new double[silence];
 
-    double[] tick = mAudioGenerator.getSineWave(TICK, 8000, mBeatSound);
-    double[] tock = mAudioGenerator.getSineWave(TICK, 8000, mSound);
+    double[] tick = mAudioGenerator.getSineWave(TICK_SAMPLES, 8000, mBeatSound);
+    double[] tock = mAudioGenerator.getSineWave(TICK_SAMPLES, 8000, mSound);
 
-    for(int i = 0; i< TICK; i++) {
+    for(int i = 0; i< TICK_SAMPLES; i++) {
       soundTickArray[i] = tick[i];
       soundTockArray[i] = tock[i];
     }
@@ -103,7 +106,7 @@ public class Metronome {
 
     calcSilence();
     do {
-      Message msg = Message.obtain(mHandler, currentBeat, isBeatTock(currentBeat)? "Tock" : "Tick");
+      Message msg = Message.obtain(mHandler, currentBeat, isBeatTock(currentBeat)? TOCK : TICK);
 
       if(isBeatTock(currentBeat))
         mAudioGenerator.writeSound(soundTockArray);

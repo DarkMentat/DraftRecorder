@@ -14,6 +14,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingTop="5dp"
+        android:paddingBottom="10dp"
         android:paddingLeft="20pt"
         android:paddingRight="20pt">
 
@@ -24,7 +26,7 @@
             android:layout_height="wrap_content"
             android:textSize="12pt"
             android:gravity="center"
-            android:ems="3"
+            android:ems="2"
             android:inputType="number"/>
 
         <EditText
@@ -36,7 +38,7 @@
             android:gravity="center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ems="2"
+            android:ems="1"
             android:inputType="number"/>
         <TextView
             android:id="@id/size_slash"
@@ -56,10 +58,17 @@
             android:textSize="12pt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ems="2"
+            android:ems="1"
             android:inputType="number"/>
 
     </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/metronome_leds"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"/>
 
     <ImageView
         android:src="@drawable/microphone"
