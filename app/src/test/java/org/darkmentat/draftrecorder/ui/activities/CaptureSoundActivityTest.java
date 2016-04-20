@@ -14,6 +14,7 @@ import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.util.ActivityController;
 
+import static org.assertj.android.api.Assertions.assertThat;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.atLeastOnce;
@@ -34,11 +35,26 @@ public class CaptureSoundActivityTest {
 
     verify(recorder, atLeastOnce()).setFileName(anyString());
 
+    assertThat(shadowOf(activity).findViewById(R.id.start_capture)).isVisible();
+    assertThat(shadowOf(activity).findViewById(R.id.stop_capture)).isGone();
+    assertThat(shadowOf(activity).findViewById(R.id.play_sound)).isGone();
+    assertThat(shadowOf(activity).findViewById(R.id.stop_sound)).isGone();
+
     shadowOf(activity).findViewById(R.id.start_capture).performClick();
     verify(recorder).recordStart();
 
+    assertThat(shadowOf(activity).findViewById(R.id.start_capture)).isGone();
+    assertThat(shadowOf(activity).findViewById(R.id.stop_capture)).isVisible();
+    assertThat(shadowOf(activity).findViewById(R.id.play_sound)).isGone();
+    assertThat(shadowOf(activity).findViewById(R.id.stop_sound)).isGone();
+
     shadowOf(activity).findViewById(R.id.stop_capture).performClick();
     verify(recorder).recordStop();
+
+    assertThat(shadowOf(activity).findViewById(R.id.start_capture)).isGone();
+    assertThat(shadowOf(activity).findViewById(R.id.stop_capture)).isGone();
+    assertThat(shadowOf(activity).findViewById(R.id.play_sound)).isVisible();
+    assertThat(shadowOf(activity).findViewById(R.id.stop_sound)).isGone();
   }
   @Test public void testPlayerUsed() {
     Player player = mock(Player.class);
@@ -49,10 +65,23 @@ public class CaptureSoundActivityTest {
 
     verify(player, atLeastOnce()).setFileName(anyString());
 
+    shadowOf(activity).findViewById(R.id.start_capture).performClick();
+    shadowOf(activity).findViewById(R.id.stop_capture).performClick();
+
     shadowOf(activity).findViewById(R.id.play_sound).performClick();
     verify(player).playStart();
 
+    assertThat(shadowOf(activity).findViewById(R.id.start_capture)).isGone();
+    assertThat(shadowOf(activity).findViewById(R.id.stop_capture)).isGone();
+    assertThat(shadowOf(activity).findViewById(R.id.play_sound)).isGone();
+    assertThat(shadowOf(activity).findViewById(R.id.stop_sound)).isVisible();
+
     shadowOf(activity).findViewById(R.id.stop_sound).performClick();
     verify(player).playStop();
+
+    assertThat(shadowOf(activity).findViewById(R.id.start_capture)).isVisible();
+    assertThat(shadowOf(activity).findViewById(R.id.stop_capture)).isGone();
+    assertThat(shadowOf(activity).findViewById(R.id.play_sound)).isGone();
+    assertThat(shadowOf(activity).findViewById(R.id.stop_sound)).isGone();
   }
 }

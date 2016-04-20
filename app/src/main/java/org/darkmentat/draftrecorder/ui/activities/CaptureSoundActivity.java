@@ -3,6 +3,7 @@ package org.darkmentat.draftrecorder.ui.activities;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 
 import org.androidannotations.annotations.Bean;
@@ -13,6 +14,8 @@ import org.darkmentat.draftrecorder.R;
 import org.darkmentat.draftrecorder.media.Player;
 import org.darkmentat.draftrecorder.media.Recorder;
 import org.darkmentat.draftrecorder.ui.adapters.RecordsAdapter;
+
+import static android.view.View.*;
 
 @EActivity(R.layout.activity_capture_sound)
 public class CaptureSoundActivity extends AppCompatActivity {
@@ -40,17 +43,46 @@ public class CaptureSoundActivity extends AppCompatActivity {
   @Click(R.id.start_capture)
   protected void onStartCapture(){
     mRecorder.recordStart();
+    switchToCapturing();
   }
   @Click(R.id.stop_capture)
   protected void onStopCapture(){
     mRecorder.recordStop();
+    switchToCaptured();
   }
   @Click(R.id.play_sound)
   protected void onPlaySound(){
     mPlayer.playStart();
+    switchToPlaying();
   }
   @Click(R.id.stop_sound)
   protected void onStopSound(){
     mPlayer.playStop();
+    switchToEmpty();
+  }
+
+  private void switchToCapturing(){
+    mStartCapture.setVisibility(GONE);
+    mStopCapture.setVisibility(VISIBLE);
+    mPlaySound.setVisibility(GONE);
+    mStopSound.setVisibility(GONE);
+  }
+  private void switchToCaptured(){
+    mStartCapture.setVisibility(GONE);
+    mStopCapture.setVisibility(GONE);
+    mPlaySound.setVisibility(VISIBLE);
+    mStopSound.setVisibility(GONE);
+  }
+  private void switchToPlaying(){
+    mStartCapture.setVisibility(GONE);
+    mStopCapture.setVisibility(GONE);
+    mPlaySound.setVisibility(GONE);
+    mStopSound.setVisibility(VISIBLE);
+  }
+  private void switchToEmpty(){
+    mStartCapture.setVisibility(VISIBLE);
+    mStopCapture.setVisibility(GONE);
+    mPlaySound.setVisibility(GONE);
+    mStopSound.setVisibility(GONE);
   }
 }
