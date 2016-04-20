@@ -26,7 +26,6 @@ import org.androidannotations.annotations.EBean;
 
 
 @EBean
-@SuppressWarnings("unused")
 public class Metronome {
 
   private double mBpm;
@@ -40,6 +39,13 @@ public class Metronome {
   private boolean mPlay = true;
 
   private AudioGenerator mAudioGenerator = new AudioGenerator(8000);
+
+  public Metronome() {
+    setBeat(4);
+    setBpm(120);
+    setSound(659);
+    setBeatSound(523);
+  }
 
   public void calcSilence() {
     mSilence = (int) (((60/ mBpm)*8000)- mTick);
