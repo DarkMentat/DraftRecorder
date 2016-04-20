@@ -15,6 +15,7 @@ import org.androidannotations.annotations.EBean;
 
   onStartStop(){
     mMetronome.setBeat(4);
+    mMetronome.setBeatLength(4);
     mMetronome.setBpm(120);
     mMetronome.setSound(659);
     mMetronome.setBeatSound(523);
@@ -52,17 +53,19 @@ public class Metronome {
   private AudioGenerator mAudioGenerator = new AudioGenerator(8000);
 
   private Handler mHandler;
+  private int mBeatLength;
 
 
   public Metronome() {
     setBeat(4);
+    setBeatLength(4);
     setBpm(120);
     setSound(659);
     setBeatSound(523);
   }
 
-  public void calcSilence() {
-    int silence = (int) (((60 / mBpm) * 8000) - TICK);
+  private void calcSilence() {
+    int silence = (int) (((60 / (mBpm * mBeatLength / 4)) * 8000) - TICK);
 
     soundTickArray = new double[TICK];
     soundTockArray = new double[TICK];
@@ -79,6 +82,18 @@ public class Metronome {
     for(int i = 0; i< silence; i++)
       silenceSoundArray[i] = 0;
   }
+  @SuppressWarnings("RedundantIfStatement")
+  private boolean isBeatTock(int beat){
+    if(beat == 1) return true;
+
+    if(mBeatLength >= 16 && mBeat % 4 == 0 && beat % (mBeat/4) == 1)
+      return true;
+
+    if(mBeatLength >= 8 && mBeat % 2 == 0 && beat % (mBeat/2) == 1)
+      return true;
+
+    return false;
+  }
 
   @Background public void start() {
     mPlay = true;
@@ -88,9 +103,9 @@ public class Metronome {
 
     calcSilence();
     do {
-      Message msg = Message.obtain(mHandler, currentBeat, "Tick");
+      Message msg = Message.obtain(mHandler, currentBeat, isBeatTock(currentBeat)? "Tock" : "Tick");
 
-      if(currentBeat == 1)
+      if(isBeatTock(currentBeat))
         mAudioGenerator.writeSound(soundTockArray);
       else
         mAudioGenerator.writeSound(soundTickArray);
@@ -129,5 +144,8 @@ public class Metronome {
   }
   public void setSound(double sound) {
     this.mSound = sound;
+  }
+  public void setBeatLength(int beatLength) {
+    mBeatLength = beatLength;
   }
 }
