@@ -5,4 +5,11 @@
     <string name="stop_capture">Stop capture</string>
     <string name="play_sound">Play sound</string>
     <string name="stop_sound">Stop sound</string>
+    <string name="enable_metronome">Enable metronome</string>
+    <string name="bpm">BPM</string>
+    <string name="default_size_len">4</string>
+    <string name="slash">/</string>
+    <string name="default_size_beats">4</string>
+    <string name="default_bpm">120</string>
+    <string name="microphone">microphone</string>
 </resources>

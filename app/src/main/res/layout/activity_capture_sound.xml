@@ -11,10 +11,62 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="org.darkmentat.draftrecorder.ui.activities.CaptureSoundActivity">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="20pt"
+        android:paddingRight="20pt">
+
+        <EditText
+            android:id="@+id/bpm"
+            android:text="@string/default_bpm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12pt"
+            android:gravity="center"
+            android:ems="3"
+            android:inputType="number"/>
+
+        <EditText
+            android:id="@+id/size_beats"
+            android:layout_toStartOf="@+id/size_slash"
+            android:layout_toLeftOf="@+id/size_slash"
+            android:textSize="12pt"
+            android:text="@string/default_size_beats"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="2"
+            android:inputType="number"/>
+        <TextView
+            android:id="@id/size_slash"
+            android:layout_toStartOf="@+id/size_length"
+            android:layout_toLeftOf="@+id/size_length"
+            android:text="@string/slash"
+            android:gravity="center"
+            android:textSize="20pt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <EditText
+            android:id="@id/size_length"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:text="@string/default_size_len"
+            android:gravity="center"
+            android:textSize="12pt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="2"
+            android:inputType="number"/>
+
+    </RelativeLayout>
+
     <ImageView
         android:src="@drawable/microphone"
+        android:padding="5pt"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/microphone"/>
 
     <Button
         android:id="@+id/start_capture"
