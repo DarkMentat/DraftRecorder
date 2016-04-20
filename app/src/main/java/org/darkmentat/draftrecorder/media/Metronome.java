@@ -1,9 +1,15 @@
 package org.darkmentat.draftrecorder.media;
 
+import android.os.Handler;
+import android.os.Message;
+
 import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.EBean;
 
+
 /*
+  Thanks to: https://github.com/MasterEx/BeatKeeper
+             http://masterex.github.com/archive/2012/05/28/android-audio-synthesis.html
 
   Usage:
 
@@ -21,24 +27,32 @@ import org.androidannotations.annotations.EBean;
 
     mMetronomeRunning = !mMetronomeRunning;
   }
+  onDestroy(){
+    mMetronome.release();
+  }
 
 */
-
 
 @EBean
 public class Metronome {
 
+  private final static int TICK = 1000; // samples of tick
+
   private double mBpm;
   private int mBeat;
-  private int mSilence;
-
   private double mBeatSound;
   private double mSound;
-  private final int mTick = 1000; // samples of tick
 
   private boolean mPlay = true;
 
+  private double[] soundTickArray;
+  private double[] soundTockArray;
+  private double[] silenceSoundArray;
+
   private AudioGenerator mAudioGenerator = new AudioGenerator(8000);
+
+  private Handler mHandler;
+
 
   public Metronome() {
     setBeat(4);
@@ -48,45 +62,60 @@ public class Metronome {
   }
 
   public void calcSilence() {
-    mSilence = (int) (((60/ mBpm)*8000)- mTick);
+    int silence = (int) (((60 / mBpm) * 8000) - TICK);
+
+    soundTickArray = new double[TICK];
+    soundTockArray = new double[TICK];
+    silenceSoundArray = new double[silence];
+
+    double[] tick = mAudioGenerator.getSineWave(TICK, 8000, mBeatSound);
+    double[] tock = mAudioGenerator.getSineWave(TICK, 8000, mSound);
+
+    for(int i = 0; i< TICK; i++) {
+      soundTickArray[i] = tick[i];
+      soundTockArray[i] = tock[i];
+    }
+
+    for(int i = 0; i< silence; i++)
+      silenceSoundArray[i] = 0;
   }
 
   @Background public void start() {
     mPlay = true;
     mAudioGenerator.createPlayer();
 
+    int currentBeat = 1;
+
     calcSilence();
-    double[] tick = mAudioGenerator.getSineWave(this.mTick, 8000, mBeatSound);
-    double[] tock = mAudioGenerator.getSineWave(this.mTick, 8000, mSound);
-    double silence = 0;
-    double[] sound = new double[8000];
-    int t = 0,s = 0,b = 0;
     do {
-      for(int i = 0; i<sound.length&& mPlay; i++) {
-        if(t<this.mTick) {
-          if(b == 0)
-            sound[i] = tock[t];
-          else
-            sound[i] = tick[t];
-          t++;
-        } else {
-          sound[i] = silence;
-          s++;
-          if(s >= this.mSilence) {
-            t = 0;
-            s = 0;
-            b++;
-            if(b > (this.mBeat -1))
-              b = 0;
-          }
-        }
-      }
-      mAudioGenerator.writeSound(sound);
+      Message msg = Message.obtain(mHandler, currentBeat, "Tick");
+
+      if(currentBeat == 1)
+        mAudioGenerator.writeSound(soundTockArray);
+      else
+        mAudioGenerator.writeSound(soundTickArray);
+
+      mAudioGenerator.writeSound(silenceSoundArray);
+
+      if(mHandler != null)
+        mHandler.sendMessage(msg);
+
+      currentBeat++;
+      if(currentBeat > mBeat)
+        currentBeat = 1;
     } while(mPlay);
   }
   @Background public void stop() {
     mPlay = false;
     mAudioGenerator.stopAudioTrack();
+  }
+  public void release(){
+    mAudioGenerator.releaseAudioTrack();
+    mHandler = null;
+  }
+
+  public void setHandler(Handler handler){
+    mHandler = handler;
   }
 
   public void setBpm(int bpm) {
