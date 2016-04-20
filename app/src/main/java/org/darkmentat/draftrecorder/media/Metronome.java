@@ -86,7 +86,7 @@ public class Metronome {
   }
   @Background public void stop() {
     mPlay = false;
-    mAudioGenerator.destroyAudioTrack();
+    mAudioGenerator.stopAudioTrack();
   }
 
   public void setBpm(int bpm) {
