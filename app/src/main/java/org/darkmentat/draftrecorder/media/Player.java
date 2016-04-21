@@ -6,8 +6,16 @@ import android.os.Environment;
 
 import org.androidannotations.annotations.EBean;
 
+import java.lang.ref.WeakReference;
+
 @EBean
 public class Player {
+
+  public interface PlayerListener {
+    void onPlayingStop();
+  }
+
+  private WeakReference<PlayerListener> mPlayerListener;
 
   private String mFileName;
   private MediaPlayer mMediaPlayer;
@@ -24,6 +32,17 @@ public class Player {
       mMediaPlayer.prepare();
       mMediaPlayer.start();
 
+      mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+        @Override
+        public void onCompletion(MediaPlayer mp) {
+          PlayerListener listener = mPlayerListener.get();
+
+          if(listener != null){
+            listener.onPlayingStop();
+          }
+        }
+      });
+
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -31,6 +50,12 @@ public class Player {
   public void playStop() {
     if (mMediaPlayer != null) {
       mMediaPlayer.stop();
+
+      PlayerListener listener = mPlayerListener.get();
+
+      if(listener != null){
+        listener.onPlayingStop();
+      }
     }
   }
   private void releasePlayer() {
@@ -38,5 +63,9 @@ public class Player {
       mMediaPlayer.release();
       mMediaPlayer = null;
     }
+  }
+
+  public void setPlayerListener(PlayerListener playerListener) {
+    mPlayerListener = new WeakReference<>(playerListener);
   }
 }

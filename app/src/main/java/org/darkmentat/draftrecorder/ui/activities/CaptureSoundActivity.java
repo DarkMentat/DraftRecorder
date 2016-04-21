@@ -23,7 +23,7 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 @EActivity(R.layout.activity_capture_sound)
-public class CaptureSoundActivity extends AppCompatActivity {
+public class CaptureSoundActivity extends AppCompatActivity implements Player.PlayerListener {
 
   @ViewById(R.id.bpm) EditText mBpmText;  //todo replace with NumberPicker
   @ViewById(R.id.size_beats) EditText mSizeBeatsText;  //todo replace with NumberPicker
@@ -63,6 +63,7 @@ public class CaptureSoundActivity extends AppCompatActivity {
     if(mPlayer == null) mPlayer = player;
 
     mPlayer.setFileName("test_mic.mp3");
+    mPlayer.setPlayerListener(this);
   }
   @Bean
   public void setRecorder(Recorder recorder){
@@ -98,6 +99,9 @@ public class CaptureSoundActivity extends AppCompatActivity {
   @Click(R.id.stop_sound)
   protected void onStopSound(){
     mPlayer.playStop();
+  }
+
+  public void onPlayingStop(){
     switchToEmpty();
   }
 

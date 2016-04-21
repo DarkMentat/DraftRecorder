@@ -46,8 +46,7 @@ public class RecordsActivity extends AppCompatActivity {
 
   @Click(R.id.fab)
   protected void onFab(){
-    Snackbar.make(mFab, "Replace with your own action", Snackbar.LENGTH_LONG)
-        .setAction("Action", null).show();
+    CaptureSoundActivity_.intent(this).start();
   }
 
   @OptionsItem(R.id.action_settings)
