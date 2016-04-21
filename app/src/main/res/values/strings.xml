@@ -12,4 +12,6 @@
     <string name="default_size_beats">4</string>
     <string name="default_bpm">120</string>
     <string name="microphone">microphone</string>
+    <string name="delete_sound">Delete</string>
+    <string name="save_sound">Save</string>
 </resources>

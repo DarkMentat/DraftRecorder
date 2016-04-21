@@ -70,12 +70,12 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"/>
 
-    <ImageView
-        android:src="@drawable/microphone"
-        android:padding="5pt"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:contentDescription="@string/microphone"/>
+    <!--<ImageView-->
+        <!--android:src="@drawable/microphone"-->
+        <!--android:padding="5pt"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:contentDescription="@string/microphone"/>-->
 
     <Button
         android:id="@+id/start_capture"
@@ -104,6 +104,22 @@
     <Button
         android:id="@+id/stop_sound"
         android:text="@string/stop_sound"
+        android:layout_marginLeft="20pt"
+        android:layout_marginRight="20pt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+    <Button
+        android:id="@+id/delete_sound"
+        android:text="@string/delete_sound"
+        android:layout_marginLeft="20pt"
+        android:layout_marginRight="20pt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+    <Button
+        android:id="@+id/save_sound"
+        android:text="@string/save_sound"
         android:layout_marginLeft="20pt"
         android:layout_marginRight="20pt"
         android:layout_width="match_parent"

@@ -48,7 +48,7 @@ public class Player {
     }
   }
   public void playStop() {
-    if (mMediaPlayer != null) {
+    if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
       mMediaPlayer.stop();
 
       PlayerListener listener = mPlayerListener.get();
@@ -58,7 +58,7 @@ public class Player {
       }
     }
   }
-  private void releasePlayer() {
+  public void releasePlayer() {
     if (mMediaPlayer != null) {
       mMediaPlayer.release();
       mMediaPlayer = null;

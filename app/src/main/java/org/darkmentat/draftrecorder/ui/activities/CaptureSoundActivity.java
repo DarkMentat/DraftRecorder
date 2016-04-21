@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
@@ -35,6 +36,8 @@ public class CaptureSoundActivity extends AppCompatActivity implements Player.Pl
   @ViewById(R.id.stop_capture) Button mStopCapture;
   @ViewById(R.id.play_sound) Button mPlaySound;
   @ViewById(R.id.stop_sound) Button mStopSound;
+  @ViewById(R.id.delete_sound) Button mDeleteSound;
+  @ViewById(R.id.save_sound) Button mSaveSound;
 
   Metronome mMetronome;
   Recorder mRecorder;
@@ -100,9 +103,19 @@ public class CaptureSoundActivity extends AppCompatActivity implements Player.Pl
   protected void onStopSound(){
     mPlayer.playStop();
   }
+  @Click(R.id.delete_sound)
+  protected void onDeleteSound(){
+    mPlayer.playStop();
+    switchToEmpty();
+  }
+  @Click(R.id.save_sound)
+  protected void onSaveSound(){
+    mPlayer.playStop();
+    Toast.makeText(CaptureSoundActivity.this, "Save, returning result", Toast.LENGTH_SHORT).show();
+  }
 
   public void onPlayingStop(){
-    switchToEmpty();
+    switchToCaptured();
   }
 
   private void setMetronomeConfig(){
@@ -153,23 +166,35 @@ public class CaptureSoundActivity extends AppCompatActivity implements Player.Pl
     mStopCapture.setVisibility(VISIBLE);
     mPlaySound.setVisibility(GONE);
     mStopSound.setVisibility(GONE);
+
+    mDeleteSound.setVisibility(GONE);
+    mSaveSound.setVisibility(GONE);
   }
   private void switchToCaptured(){
     mStartCapture.setVisibility(GONE);
     mStopCapture.setVisibility(GONE);
     mPlaySound.setVisibility(VISIBLE);
     mStopSound.setVisibility(GONE);
+
+    mDeleteSound.setVisibility(VISIBLE);
+    mSaveSound.setVisibility(VISIBLE);
   }
   private void switchToPlaying(){
     mStartCapture.setVisibility(GONE);
     mStopCapture.setVisibility(GONE);
     mPlaySound.setVisibility(GONE);
     mStopSound.setVisibility(VISIBLE);
+
+    mDeleteSound.setVisibility(VISIBLE);
+    mSaveSound.setVisibility(VISIBLE);
   }
   private void switchToEmpty(){
     mStartCapture.setVisibility(VISIBLE);
     mStopCapture.setVisibility(GONE);
     mPlaySound.setVisibility(GONE);
     mStopSound.setVisibility(GONE);
+
+    mDeleteSound.setVisibility(GONE);
+    mSaveSound.setVisibility(GONE);
   }
 }
