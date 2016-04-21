@@ -115,7 +115,7 @@ public class Metronome {
 
       mAudioGenerator.writeSound(silenceSoundArray);
 
-      if(mHandler != null)
+      if(mHandler != null && mPlay)
         mHandler.sendMessage(msg);
 
       currentBeat++;
