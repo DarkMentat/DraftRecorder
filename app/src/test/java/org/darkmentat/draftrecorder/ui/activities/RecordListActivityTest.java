@@ -9,8 +9,7 @@ import org.darkmentat.draftrecorder.BuildConfig;
 import org.darkmentat.draftrecorder.R;
 import org.darkmentat.draftrecorder.domain.Record;
 import org.darkmentat.draftrecorder.domain.RecordRepository;
-import org.darkmentat.draftrecorder.ui.activities.RecordsActivity;
-import org.darkmentat.draftrecorder.ui.activities.RecordsActivity_;
+import org.darkmentat.draftrecorder.ui.activities.RecordListActivity_;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
@@ -26,7 +25,7 @@ import static org.robolectric.Shadows.shadowOf;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = Build.VERSION_CODES.KITKAT)
-public class RecordsActivityTest {
+public class RecordListActivityTest {
 
   @Test public void testRecordsListLoaded() {
     RecordRepository recordRepository = mock(RecordRepository.class);
@@ -36,9 +35,9 @@ public class RecordsActivityTest {
         new Record(0, "Test3", 80)
     });
 
-    ActivityController<RecordsActivity_> recordsActivityController = Robolectric.buildActivity(RecordsActivity_.class);
+    ActivityController<RecordListActivity_> recordsActivityController = Robolectric.buildActivity(RecordListActivity_.class);
     recordsActivityController.get().setRecordRepository(recordRepository);
-    RecordsActivity activity = recordsActivityController.create().start().resume().visible().get();
+    RecordListActivity activity = recordsActivityController.create().start().resume().visible().get();
 
     RecyclerView listRecords = (RecyclerView) shadowOf(activity).findViewById(R.id.list_records);
 

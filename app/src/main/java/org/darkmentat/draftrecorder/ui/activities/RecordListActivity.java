@@ -1,7 +1,6 @@
 package org.darkmentat.draftrecorder.ui.activities;
 
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,8 +13,8 @@ import org.darkmentat.draftrecorder.domain.FakeRecordRepository;
 import org.darkmentat.draftrecorder.domain.RecordRepository;
 import org.darkmentat.draftrecorder.ui.adapters.RecordsAdapter;
 
-@EActivity(R.layout.activity_records) @OptionsMenu(R.menu.menu_records)
-public class RecordsActivity extends AppCompatActivity {
+@EActivity(R.layout.activity_record_list) @OptionsMenu(R.menu.menu_record_list)
+public class RecordListActivity extends AppCompatActivity {
 
   @ViewById(R.id.toolbar) Toolbar mToolbar;
   @ViewById(R.id.fab) FloatingActionButton mFab;
@@ -51,6 +50,6 @@ public class RecordsActivity extends AppCompatActivity {
 
   @OptionsItem(R.id.action_settings)
   protected void onSettings(){
-    Toast.makeText(RecordsActivity.this, "Settings", Toast.LENGTH_SHORT).show();
+    Toast.makeText(RecordListActivity.this, "Settings", Toast.LENGTH_SHORT).show();
   }
 }
