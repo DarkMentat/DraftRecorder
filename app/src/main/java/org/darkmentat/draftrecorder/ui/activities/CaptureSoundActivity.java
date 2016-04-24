@@ -1,7 +1,10 @@
 package org.darkmentat.draftrecorder.ui.activities;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -23,6 +26,7 @@ import org.darkmentat.draftrecorder.media.Recorder;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
+@SuppressWarnings("deprecation")
 @EActivity(R.layout.activity_capture_sound)
 public class CaptureSoundActivity extends AppCompatActivity implements Player.PlayerListener {
 
@@ -71,8 +75,6 @@ public class CaptureSoundActivity extends AppCompatActivity implements Player.Pl
   @Bean
   public void setRecorder(Recorder recorder){
     if(mRecorder == null) mRecorder = recorder;
-
-    mRecorder.setFileName("test_mic.mp3");
   }
 
   @AfterViews
@@ -82,7 +84,7 @@ public class CaptureSoundActivity extends AppCompatActivity implements Player.Pl
 
   @Click(R.id.start_capture)
   protected void onStartCapture(){
-    mRecorder.recordStart();
+    mRecorder.recordStart(mBpm, mBeats, mBeatLength);
     setMetronomeConfig();
     mMetronome.start();
     switchToCapturing();
@@ -111,7 +113,9 @@ public class CaptureSoundActivity extends AppCompatActivity implements Player.Pl
   @Click(R.id.save_sound)
   protected void onSaveSound(){
     mPlayer.playStop();
-    Toast.makeText(CaptureSoundActivity.this, "Save, returning result", Toast.LENGTH_SHORT).show();
+
+    createSaveDialog().show();
+
   }
 
   public void onPlayingStop(){
@@ -196,5 +200,33 @@ public class CaptureSoundActivity extends AppCompatActivity implements Player.Pl
 
     mDeleteSound.setVisibility(GONE);
     mSaveSound.setVisibility(GONE);
+  }
+
+  private Dialog createSaveDialog() {
+
+    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    builder.setTitle("Save record");
+    builder.setMessage("Enter record name:");
+
+    final EditText input = new EditText(this);
+    input.setId(0);
+    builder.setView(input);
+
+    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+      @Override
+      public void onClick(DialogInterface dialog, int whichButton) {
+        mRecorder.saveFile(input.getText().toString());
+        return;
+      }
+    });
+
+    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+      @Override
+      public void onClick(DialogInterface dialog, int which) {
+        return;
+      }
+    });
+
+    return builder.create();
   }
 }

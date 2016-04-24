@@ -70,12 +70,12 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"/>
 
-    <ImageView
-        android:src="@drawable/microphone"
-        android:padding="5pt"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:contentDescription="@string/microphone"/>
+    <!--<ImageView-->
+        <!--android:src="@drawable/microphone"-->
+        <!--android:padding="5pt"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:contentDescription="@string/microphone"/>-->
 
     <Button
         android:id="@+id/start_capture"

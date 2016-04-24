@@ -10,27 +10,33 @@ import java.io.File;
 @EBean
 public class Recorder {
 
-  private String mFileName;
+  public static final String NEW_SOUND_FILE = "newsound.mp3";
+
   private MediaRecorder mMediaRecorder;
 
-  public void setFileName(String fileName){
-    mFileName = fileName;
-  }
-  public void recordStart() {
+  private int mBpm;
+  private int mBeats;
+  private int mBeatLength;
+
+  public void recordStart(int bpm, int beats, int beatLength) {
     try {
       releaseRecorder();
 
-      File outFile = new File(mFileName);
-      if (outFile.exists()) {
-        //noinspection ResultOfMethodCallIgnored
-        outFile.delete();
-      }
+//      File outFile = new File(NEW_SOUND_FILE);
+//      if (outFile.exists()) {
+//        //noinspection ResultOfMethodCallIgnored
+//        outFile.delete();
+//      }
+
+      mBpm = bpm;
+      mBeats = beats;
+      mBeatLength = beatLength;
 
       mMediaRecorder = new MediaRecorder();
       mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
       mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
       mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-      mMediaRecorder.setOutputFile(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + mFileName);
+      mMediaRecorder.setOutputFile(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + NEW_SOUND_FILE);
       mMediaRecorder.prepare();
       mMediaRecorder.start();
 
@@ -43,10 +49,20 @@ public class Recorder {
       mMediaRecorder.stop();
     }
   }
-  private void releaseRecorder() {
+  public void releaseRecorder() {
     if (mMediaRecorder != null) {
       mMediaRecorder.release();
       mMediaRecorder = null;
     }
+  }
+
+  public void saveFile(String name){
+    String fileName = name + " " + mBpm + " " + mBeats + " " + mBeatLength + ".mp3";
+
+    File from = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), NEW_SOUND_FILE);
+    File to = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), fileName);
+
+    //noinspection ResultOfMethodCallIgnored
+    from.renameTo(to);
   }
 }
