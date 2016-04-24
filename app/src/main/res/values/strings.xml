@@ -14,4 +14,6 @@
     <string name="microphone">microphone</string>
     <string name="delete_sound">Delete</string>
     <string name="save_sound">Save</string>
+    <string name="action_play">Play</string>
+    <string name="action_add_track">Add track</string>
 </resources>

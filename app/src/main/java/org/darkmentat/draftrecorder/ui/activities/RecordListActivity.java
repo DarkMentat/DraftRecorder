@@ -45,7 +45,7 @@ public class RecordListActivity extends AppCompatActivity {
 
   @Click(R.id.fab)
   protected void onFab(){
-    CaptureSoundActivity_.intent(this).start();
+    RecordActivity_.intent(this).start();
   }
 
   @OptionsItem(R.id.action_settings)

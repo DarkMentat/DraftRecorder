@@ -21,6 +21,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.activities.CaptureSoundActivity_"/>
+        <activity android:name=".ui.activities.RecordActivity_"
+                  android:label="@string/app_name"
+                  android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
 </manifest>
