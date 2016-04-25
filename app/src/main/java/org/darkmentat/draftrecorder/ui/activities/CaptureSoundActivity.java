@@ -2,6 +2,7 @@ package org.darkmentat.draftrecorder.ui.activities;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AlertDialog;
@@ -29,6 +30,8 @@ import static android.view.View.VISIBLE;
 @SuppressWarnings("deprecation")
 @EActivity(R.layout.activity_capture_sound)
 public class CaptureSoundActivity extends AppCompatActivity implements Player.PlayerListener {
+
+  public static final String RESULT_RECORD_FILE_NAME = "RESULT_RECORD_FILE_NAME";
 
   @ViewById(R.id.bpm) EditText mBpmText;  //todo replace with NumberPicker
   @ViewById(R.id.size_beats) EditText mSizeBeatsText;  //todo replace with NumberPicker
@@ -216,6 +219,9 @@ public class CaptureSoundActivity extends AppCompatActivity implements Player.Pl
       @Override
       public void onClick(DialogInterface dialog, int whichButton) {
         mRecorder.saveFile(input.getText().toString());
+
+        setResult(RESULT_OK, new Intent(){{putExtra(RESULT_RECORD_FILE_NAME, input.getText().toString());}});
+
         return;
       }
     });

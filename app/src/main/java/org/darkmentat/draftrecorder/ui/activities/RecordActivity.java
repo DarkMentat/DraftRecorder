@@ -1,8 +1,10 @@
 package org.darkmentat.draftrecorder.ui.activities;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.widget.LinearLayout;
 
 import org.androidannotations.annotations.AfterViews;
@@ -17,6 +19,8 @@ import static android.widget.LinearLayout.HORIZONTAL;
 
 @EActivity(R.layout.activity_record) @OptionsMenu(R.menu.menu_record)
 public class RecordActivity extends AppCompatActivity {
+
+  public static final int REQUEST_NEW_RECORD = 1;
 
   @ViewById(R.id.toolbar) Toolbar mToolbar;
   @ViewById(R.id.track_container) LinearLayout mTrackContainer;
@@ -34,6 +38,25 @@ public class RecordActivity extends AppCompatActivity {
     track.setOrientation(HORIZONTAL);
     track.setBackgroundColor(Color.LTGRAY);
 
+    track.setOnLongClickListener(new View.OnLongClickListener() {
+      @Override public boolean onLongClick(View v) {
+        CaptureSoundActivity_.intent(RecordActivity.this).startForResult(REQUEST_NEW_RECORD);
+        return true;
+      }
+    });
+
     mTrackContainer.addView(track);
+  }
+
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+
+    if(requestCode != REQUEST_NEW_RECORD)
+      return;
+
+    if(resultCode != RESULT_OK)
+      return;
+
   }
 }
