@@ -17,8 +17,8 @@ import org.darkmentat.draftrecorder.R;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import static android.widget.LinearLayout.HORIZONTAL;
 
-@EActivity(R.layout.activity_record) @OptionsMenu(R.menu.menu_record)
-public class RecordActivity extends AppCompatActivity {
+@EActivity(R.layout.activity_music_composition) @OptionsMenu(R.menu.menu_music_composition)
+public class MusicCompositionActivity extends AppCompatActivity {
 
   public static final int REQUEST_NEW_RECORD = 1;
 
@@ -40,7 +40,7 @@ public class RecordActivity extends AppCompatActivity {
 
     track.setOnLongClickListener(new View.OnLongClickListener() {
       @Override public boolean onLongClick(View v) {
-        CaptureSoundActivity_.intent(RecordActivity.this).startForResult(REQUEST_NEW_RECORD);
+        CaptureSoundActivity_.intent(MusicCompositionActivity.this).startForResult(REQUEST_NEW_RECORD);
         return true;
       }
     });

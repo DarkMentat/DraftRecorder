@@ -6,8 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".ui.activities.RecordListActivity"
-    tools:showIn="@layout/activity_record_list">
+    tools:context=".ui.activities.MusicCompositionListActivity"
+    tools:showIn="@layout/activity_music_composition_list">
 
     <android.support.v7.widget.RecyclerView
         android:paddingBottom="@dimen/activity_vertical_margin"

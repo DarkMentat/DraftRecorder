@@ -10,8 +10,8 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="org.darkmentat.draftrecorder.ui.activities.RecordActivity"
-    tools:showIn="@layout/activity_record">
+    tools:context=".ui.activities.MusicCompositionActivity"
+    tools:showIn="@layout/activity_music_composition">
 
         <ScrollView
             android:layout_width="wrap_content"

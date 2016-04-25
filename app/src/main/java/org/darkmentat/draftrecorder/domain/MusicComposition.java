@@ -1,11 +1,11 @@
 package org.darkmentat.draftrecorder.domain;
 
-public class Record {
+public class MusicComposition {
   private int mId;
   private String mName;
   private int mBps;
 
-  public Record(int mId, String mName, int mBps) {
+  public MusicComposition(int mId, String mName, int mBps) {
     this.mId = mId;
     this.mName = mName;
     this.mBps = mBps;
