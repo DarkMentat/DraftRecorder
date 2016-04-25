@@ -12,6 +12,9 @@ public class MusicComposition {
     private int mBeats;
     private int mBeatLength;
 
+    public Region() {
+      this(-1,-1,-1);
+    }
     public Region(int bpm, int beats, int beatLength) {
       mBpm = bpm;
       mBeats = beats;
@@ -29,6 +32,36 @@ public class MusicComposition {
     public Map<Integer, Track> getTracks(){
       return mTracks;
     }
+
+    public int getBpm() {
+      return mBpm;
+    }
+    public void setBpm(int bpm) {
+      mBpm = bpm;
+    }
+
+    public int getBeats() {
+      return mBeats;
+    }
+    public void setBeats(int beats) {
+      mBeats = beats;
+    }
+
+    public int getBeatLength() {
+      return mBeatLength;
+    }
+    public void setBeatLength(int beatLength) {
+      mBeatLength = beatLength;
+    }
+
+    public boolean hasSomeRecord(){
+      for(Track track : mTracks.values()){
+        if(track.hasSomeRecord())
+          return true;
+      }
+
+      return false;
+    }
   }
 
   public static class Track {
@@ -41,7 +74,9 @@ public class MusicComposition {
     public void removeRecord(Record record){
       mRecords.remove(record);
     }
-
+    public boolean hasSomeRecord(){
+      return !mRecords.isEmpty();
+    }
   }
 
   public static class Record {

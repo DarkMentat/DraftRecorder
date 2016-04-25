@@ -7,17 +7,17 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
+import org.androidannotations.annotations.AfterExtras;
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.Extra;
 import org.androidannotations.annotations.ViewById;
 import org.darkmentat.draftrecorder.R;
 import org.darkmentat.draftrecorder.media.Metronome;
@@ -26,6 +26,9 @@ import org.darkmentat.draftrecorder.media.Recorder;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
+import static org.darkmentat.draftrecorder.ui.activities.MusicCompositionActivity.EXTRA_BEATS;
+import static org.darkmentat.draftrecorder.ui.activities.MusicCompositionActivity.EXTRA_BEAT_LENGTH;
+import static org.darkmentat.draftrecorder.ui.activities.MusicCompositionActivity.EXTRA_BPM;
 
 @SuppressWarnings("deprecation")
 @EActivity(R.layout.activity_capture_sound)
@@ -50,9 +53,9 @@ public class CaptureSoundActivity extends AppCompatActivity implements Player.Pl
   Recorder mRecorder;
   Player mPlayer;
 
-  private int mBpm;
-  private int mBeats;
-  private int mBeatLength;
+  @Extra(EXTRA_BPM) int mBpm = -1;
+  @Extra(EXTRA_BEATS) int mBeats = -1;
+  @Extra(EXTRA_BEAT_LENGTH) int mBeatLength = -1;
 
   Handler mHandler = new Handler(){
     @Override
@@ -80,41 +83,48 @@ public class CaptureSoundActivity extends AppCompatActivity implements Player.Pl
     if(mRecorder == null) mRecorder = recorder;
   }
 
-  @AfterViews
-  protected void onLoad(){
+  @AfterViews void onLoad(){
+    loadExtras();
+
     setMetronomeConfig();
   }
+  private void loadExtras(){
+    if(mBpm == -1 || mBeats == -1 || mBeatLength == -1)
+      return;
 
-  @Click(R.id.start_capture)
-  protected void onStartCapture(){
+    mBpmText.setText(String.valueOf(mBpm));
+    mSizeBeatsText.setText(String.valueOf(mBeats));
+    mSizeLengthText.setText(String.valueOf(mBeatLength));
+
+    mBpmText.setEnabled(false);
+    mSizeBeatsText.setEnabled(false);
+    mSizeLengthText.setEnabled(false);
+  }
+
+  @Click(R.id.start_capture) void onStartCapture(){
     mRecorder.recordStart(mBpm, mBeats, mBeatLength);
     setMetronomeConfig();
     mMetronome.start();
     switchToCapturing();
   }
-  @Click(R.id.stop_capture)
-  protected void onStopCapture(){
+  @Click(R.id.stop_capture) void onStopCapture(){
     mRecorder.recordStop();
     mMetronome.stop();
     resetMetronomeLeds();
     switchToCaptured();
   }
-  @Click(R.id.play_sound)
-  protected void onPlaySound(){
+  @Click(R.id.play_sound) void onPlaySound(){
     mPlayer.playStart();
     switchToPlaying();
   }
-  @Click(R.id.stop_sound)
-  protected void onStopSound(){
+  @Click(R.id.stop_sound) void onStopSound(){
     mPlayer.playStop();
   }
-  @Click(R.id.delete_sound)
-  protected void onDeleteSound(){
+  @Click(R.id.delete_sound) void onDeleteSound(){
     mPlayer.playStop();
     switchToEmpty();
   }
-  @Click(R.id.save_sound)
-  protected void onSaveSound(){
+  @Click(R.id.save_sound) void onSaveSound(){
     mPlayer.playStop();
 
     createSaveDialog().show();
@@ -220,7 +230,12 @@ public class CaptureSoundActivity extends AppCompatActivity implements Player.Pl
       public void onClick(DialogInterface dialog, int whichButton) {
         mRecorder.saveFile(input.getText().toString());
 
-        setResult(RESULT_OK, new Intent(){{putExtra(RESULT_RECORD_FILE_NAME, input.getText().toString());}});
+        setResult(RESULT_OK, new Intent(){{
+          putExtra(RESULT_RECORD_FILE_NAME, input.getText().toString());
+          putExtra(EXTRA_BPM, mBpm);
+          putExtra(EXTRA_BEATS, mBeats);
+          putExtra(EXTRA_BEAT_LENGTH, mBeatLength);
+        }});
 
         finish();
 

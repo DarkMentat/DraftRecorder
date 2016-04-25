@@ -32,10 +32,10 @@ public class MusicCompositionListActivity extends AppCompatActivity {
     if(mMusicCompositionsAdapter == null) mMusicCompositionsAdapter = adapter;
   }
 
-  @AfterViews protected void bindActionBar() {
+  @AfterViews void bindActionBar() {
     setSupportActionBar(mToolbar);
   }
-  @AfterViews protected void setListRecords(){
+  @AfterViews void setListRecords(){
     mMusicCompositionsAdapter.setItems(mMusicCompositionRepository.getAllMusicCompositions());
 
     mListRecords.setHasFixedSize(true);
@@ -43,13 +43,11 @@ public class MusicCompositionListActivity extends AppCompatActivity {
     mListRecords.setAdapter(mMusicCompositionsAdapter);
   }
 
-  @Click(R.id.fab)
-  protected void onFab(){
+  @Click(R.id.fab) void onFab(){
     MusicCompositionActivity_.intent(this).start();
   }
 
-  @OptionsItem(R.id.action_settings)
-  protected void onSettings(){
+  @OptionsItem(R.id.action_settings) void onSettings(){
     Toast.makeText(MusicCompositionListActivity.this, "Settings", Toast.LENGTH_SHORT).show();
   }
 }

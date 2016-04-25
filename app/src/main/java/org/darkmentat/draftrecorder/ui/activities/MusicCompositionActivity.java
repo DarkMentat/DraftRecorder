@@ -31,18 +31,22 @@ public class MusicCompositionActivity extends AppCompatActivity {
 
   public static final int REQUEST_NEW_RECORD = 1;
 
+  public static final String EXTRA_BPM = "BPM";
+  public static final String EXTRA_BEATS = "BEATS";
+  public static final String EXTRA_BEAT_LENGTH = "BEAT_LENGTH";
+
   private MusicComposition mMusicComposition = new MusicComposition(0, "TestComposition");
   {
-    mMusicComposition.addRegion(new MusicComposition.Region(120, 4, 4));
+    mMusicComposition.addRegion(new MusicComposition.Region());
   }
 
   @ViewById(R.id.toolbar) Toolbar mToolbar;
   @ViewById(R.id.region_container) LinearLayout mRegionContainer;
 
-  @AfterViews protected void bindActionBar() {
+  @AfterViews void bindActionBar() {
     setSupportActionBar(mToolbar);
   }
-  @AfterViews protected void loadMusicComposition(){
+  @AfterViews void loadMusicComposition(){
     List<Region> regions = mMusicComposition.getRegions();
 
     for(Region region : regions){
@@ -57,8 +61,7 @@ public class MusicCompositionActivity extends AppCompatActivity {
     }
   }
 
-  @OptionsItem(R.id.action_add_track)
-  protected void onAddTrack(){
+  @OptionsItem(R.id.action_add_track) void onAddTrack(){
     createTrackView((LinearLayout) mRegionContainer.getChildAt(0), new Track());
   }
 
@@ -72,8 +75,8 @@ public class MusicCompositionActivity extends AppCompatActivity {
 
     return regionView;
   }
-  private void createTrackView(LinearLayout regionView, Track track){
-    LinearLayout trackView = new LinearLayout(this);
+  private void createTrackView(final LinearLayout regionView, final Track track){
+    final LinearLayout trackView = new LinearLayout(this);
     trackView.setLayoutParams(new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT){{setMargins(0,5,0,5);}});
     trackView.setMinimumHeight(100);
     trackView.setMinimumWidth(regionView.getRootView().getRootView().getMeasuredWidth());
@@ -84,7 +87,15 @@ public class MusicCompositionActivity extends AppCompatActivity {
 
     trackView.setOnLongClickListener(new View.OnLongClickListener() {
       @Override public boolean onLongClick(View v) {
-        CaptureSoundActivity_.intent(MusicCompositionActivity.this).startForResult(REQUEST_NEW_RECORD);
+        if(((Region) regionView.getTag()).hasSomeRecord()){
+          CaptureSoundActivity_.intent(MusicCompositionActivity.this).startForResult(REQUEST_NEW_RECORD);
+        } else {
+          CaptureSoundActivity_.intent(MusicCompositionActivity.this)
+              .extra(EXTRA_BPM, ((Region) regionView.getTag()).getBpm())
+              .extra(EXTRA_BEATS, ((Region) regionView.getTag()).getBeats())
+              .extra(EXTRA_BEAT_LENGTH, ((Region) regionView.getTag()).getBeatLength())
+              .startForResult(REQUEST_NEW_RECORD);
+        }
         return true;
       }
     });
@@ -102,8 +113,7 @@ public class MusicCompositionActivity extends AppCompatActivity {
     trackView.addView(recordView);
   }
 
-  @Override
-  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+  @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
 
     if(requestCode != REQUEST_NEW_RECORD)
@@ -112,6 +122,22 @@ public class MusicCompositionActivity extends AppCompatActivity {
     if(resultCode != RESULT_OK)
       return;
 
-    createRecordView((LinearLayout) ((LinearLayout) mRegionContainer.getChildAt(0)).getChildAt(0), new Record());
+    Region region = (Region) mRegionContainer.getChildAt(0).getTag();
+    Track track = (Track) ((LinearLayout) mRegionContainer.getChildAt(0)).getChildAt(0).getTag();
+
+    if(!region.hasSomeRecord()){
+      int bpm = data.getIntExtra(EXTRA_BPM, -1);
+      int beats = data.getIntExtra(EXTRA_BEATS, -1);
+      int beatLength = data.getIntExtra(EXTRA_BEAT_LENGTH, -1);
+
+      region.setBpm(bpm);
+      region.setBeats(beats);
+      region.setBeatLength(beatLength);
+    }
+
+    Record record = new Record();
+    track.addRecord(record);
+
+    createRecordView((LinearLayout) ((LinearLayout) mRegionContainer.getChildAt(0)).getChildAt(0), record);
   }
 }
