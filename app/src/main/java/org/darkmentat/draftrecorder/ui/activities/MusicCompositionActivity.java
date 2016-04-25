@@ -14,12 +14,14 @@ import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.ViewById;
 import org.darkmentat.draftrecorder.R;
 import org.darkmentat.draftrecorder.domain.MusicComposition;
+import org.darkmentat.draftrecorder.domain.MusicComposition.Record;
 import org.darkmentat.draftrecorder.domain.MusicComposition.Region;
 import org.darkmentat.draftrecorder.domain.MusicComposition.Track;
 
 import java.util.Collection;
 import java.util.List;
 
+import static android.view.Gravity.CENTER_VERTICAL;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import static android.widget.LinearLayout.HORIZONTAL;
 import static android.widget.LinearLayout.VERTICAL;
@@ -76,6 +78,8 @@ public class MusicCompositionActivity extends AppCompatActivity {
     trackView.setMinimumHeight(100);
     trackView.setMinimumWidth(regionView.getRootView().getRootView().getMeasuredWidth());
     trackView.setOrientation(HORIZONTAL);
+    trackView.setGravity(CENTER_VERTICAL);
+    trackView.setPadding(5,5,5,5);
     trackView.setBackgroundColor(Color.LTGRAY);
 
     trackView.setOnLongClickListener(new View.OnLongClickListener() {
@@ -89,6 +93,14 @@ public class MusicCompositionActivity extends AppCompatActivity {
 
     regionView.addView(trackView);
   }
+  private void createRecordView(LinearLayout trackView, Record record){
+    View recordView = new View(this);
+    recordView.setLayoutParams(new LinearLayout.LayoutParams(170, 90));
+    recordView.setBackgroundColor(Color.DKGRAY);
+    recordView.setTag(record);
+
+    trackView.addView(recordView);
+  }
 
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -100,5 +112,6 @@ public class MusicCompositionActivity extends AppCompatActivity {
     if(resultCode != RESULT_OK)
       return;
 
+    createRecordView((LinearLayout) ((LinearLayout) mRegionContainer.getChildAt(0)).getChildAt(0), new Record());
   }
 }

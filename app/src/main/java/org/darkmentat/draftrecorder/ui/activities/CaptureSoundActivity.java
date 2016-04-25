@@ -222,6 +222,8 @@ public class CaptureSoundActivity extends AppCompatActivity implements Player.Pl
 
         setResult(RESULT_OK, new Intent(){{putExtra(RESULT_RECORD_FILE_NAME, input.getText().toString());}});
 
+        finish();
+
         return;
       }
     });
