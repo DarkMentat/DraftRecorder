@@ -13,39 +13,81 @@ import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.ViewById;
 import org.darkmentat.draftrecorder.R;
+import org.darkmentat.draftrecorder.domain.MusicComposition;
+import org.darkmentat.draftrecorder.domain.MusicComposition.Region;
+import org.darkmentat.draftrecorder.domain.MusicComposition.Track;
+
+import java.util.Collection;
+import java.util.List;
 
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import static android.widget.LinearLayout.HORIZONTAL;
+import static android.widget.LinearLayout.VERTICAL;
 
 @EActivity(R.layout.activity_music_composition) @OptionsMenu(R.menu.menu_music_composition)
 public class MusicCompositionActivity extends AppCompatActivity {
 
   public static final int REQUEST_NEW_RECORD = 1;
 
+  private MusicComposition mMusicComposition = new MusicComposition(0, "TestComposition");
+  {
+    mMusicComposition.addRegion(new MusicComposition.Region(120, 4, 4));
+  }
+
   @ViewById(R.id.toolbar) Toolbar mToolbar;
-  @ViewById(R.id.track_container) LinearLayout mTrackContainer;
+  @ViewById(R.id.region_container) LinearLayout mRegionContainer;
 
   @AfterViews protected void bindActionBar() {
     setSupportActionBar(mToolbar);
   }
+  @AfterViews protected void loadMusicComposition(){
+    List<Region> regions = mMusicComposition.getRegions();
+
+    for(Region region : regions){
+
+      LinearLayout regionView = createRegionView(region);
+
+      Collection<Track> tracks = region.getTracks().values();
+
+      for(Track track : tracks){
+        createTrackView(regionView, track);
+      }
+    }
+  }
 
   @OptionsItem(R.id.action_add_track)
   protected void onAddTrack(){
-    LinearLayout track = new LinearLayout(this);
-    track.setLayoutParams(new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT){{setMargins(0,5,0,5);}});
-    track.setMinimumHeight(100);
-    track.setMinimumWidth(mTrackContainer.getRootView().getRootView().getMeasuredWidth());
-    track.setOrientation(HORIZONTAL);
-    track.setBackgroundColor(Color.LTGRAY);
+    createTrackView((LinearLayout) mRegionContainer.getChildAt(0), new Track());
+  }
 
-    track.setOnLongClickListener(new View.OnLongClickListener() {
+  private LinearLayout createRegionView(Region region) {
+    LinearLayout regionView = new LinearLayout(this);
+    regionView.setLayoutParams(new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT){{setMargins(0,5,0,5);}});
+    regionView.setOrientation(VERTICAL);
+    regionView.setTag(region);
+
+    mRegionContainer.addView(regionView);
+
+    return regionView;
+  }
+  private void createTrackView(LinearLayout regionView, Track track){
+    LinearLayout trackView = new LinearLayout(this);
+    trackView.setLayoutParams(new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT){{setMargins(0,5,0,5);}});
+    trackView.setMinimumHeight(100);
+    trackView.setMinimumWidth(regionView.getRootView().getRootView().getMeasuredWidth());
+    trackView.setOrientation(HORIZONTAL);
+    trackView.setBackgroundColor(Color.LTGRAY);
+
+    trackView.setOnLongClickListener(new View.OnLongClickListener() {
       @Override public boolean onLongClick(View v) {
         CaptureSoundActivity_.intent(MusicCompositionActivity.this).startForResult(REQUEST_NEW_RECORD);
         return true;
       }
     });
 
-    mTrackContainer.addView(track);
+    trackView.setTag(track);
+
+    regionView.addView(trackView);
   }
 
   @Override

@@ -26,23 +26,23 @@ import static org.robolectric.Shadows.shadowOf;
 @Config(constants = BuildConfig.class, sdk = Build.VERSION_CODES.KITKAT)
 public class MusicCompositionListActivityTest {
 
-  @Test public void testRecordsListLoaded() {
-    MusicCompositionRepository recordRepository = mock(MusicCompositionRepository.class);
-    when(recordRepository.getAllMusicCompositions()).thenReturn(new MusicComposition[]{
-        new MusicComposition(0, "Test1", 80),
-        new MusicComposition(0, "Test2", 120),
-        new MusicComposition(0, "Test3", 80)
-    });
-
-    ActivityController<MusicCompositionListActivity_> recordsActivityController = Robolectric.buildActivity(MusicCompositionListActivity_.class);
-    recordsActivityController.get().setMusicCompositionRepository(recordRepository);
-    MusicCompositionListActivity activity = recordsActivityController.create().start().resume().visible().get();
-
-    RecyclerView listMusicCompositions = (RecyclerView) shadowOf(activity).findViewById(R.id.list_records);
-
-    assertThat(listMusicCompositions).hasChildCount(3);
-    assertThat((TextView)(listMusicCompositions.getChildAt(0).findViewById(R.id.music_composition_name))).containsText("Test1");
-    assertThat((TextView)(listMusicCompositions.getChildAt(1).findViewById(R.id.music_composition_name))).containsText("Test2");
-    assertThat((TextView)(listMusicCompositions.getChildAt(2).findViewById(R.id.music_composition_name))).containsText("Test3");
-  }
+//  @Test public void testRecordsListLoaded() {
+//    MusicCompositionRepository recordRepository = mock(MusicCompositionRepository.class);
+//    when(recordRepository.getAllMusicCompositions()).thenReturn(new MusicComposition[]{
+//        new MusicComposition(0, "Test1", 80),
+//        new MusicComposition(0, "Test2", 120),
+//        new MusicComposition(0, "Test3", 80)
+//    });
+//
+//    ActivityController<MusicCompositionListActivity_> recordsActivityController = Robolectric.buildActivity(MusicCompositionListActivity_.class);
+//    recordsActivityController.get().setMusicCompositionRepository(recordRepository);
+//    MusicCompositionListActivity activity = recordsActivityController.create().start().resume().visible().get();
+//
+//    RecyclerView listMusicCompositions = (RecyclerView) shadowOf(activity).findViewById(R.id.list_records);
+//
+//    assertThat(listMusicCompositions).hasChildCount(3);
+//    assertThat((TextView)(listMusicCompositions.getChildAt(0).findViewById(R.id.music_composition_name))).containsText("Test1");
+//    assertThat((TextView)(listMusicCompositions.getChildAt(1).findViewById(R.id.music_composition_name))).containsText("Test2");
+//    assertThat((TextView)(listMusicCompositions.getChildAt(2).findViewById(R.id.music_composition_name))).containsText("Test3");
+//  }
 }
