@@ -6,6 +6,7 @@ import android.os.Environment;
 
 import org.androidannotations.annotations.EBean;
 
+import java.io.File;
 import java.lang.ref.WeakReference;
 
 @EBean
@@ -17,18 +18,14 @@ public class Player {
 
   private WeakReference<PlayerListener> mPlayerListener;
 
-  private String mFileName;
   private MediaPlayer mMediaPlayer;
 
-  public void setFileName(String fileName){
-    mFileName = fileName;
-  }
-  public void playStart() {
+  public void playStart(String file) {
     try {
       releasePlayer();
 
       mMediaPlayer = new MediaPlayer();
-      mMediaPlayer.setDataSource(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + mFileName);
+      mMediaPlayer.setDataSource(file);
       mMediaPlayer.prepare();
       mMediaPlayer.start();
 

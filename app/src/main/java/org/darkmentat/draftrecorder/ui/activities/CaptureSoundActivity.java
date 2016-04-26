@@ -23,12 +23,15 @@ import org.darkmentat.draftrecorder.media.Metronome;
 import org.darkmentat.draftrecorder.media.Player;
 import org.darkmentat.draftrecorder.media.Recorder;
 
+import java.io.File;
+
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static org.darkmentat.draftrecorder.ui.activities.MusicCompositionActivity.EXTRA_COMPOSITION_NAME;
 import static org.darkmentat.draftrecorder.ui.activities.MusicCompositionActivity.EXTRA_BEATS;
 import static org.darkmentat.draftrecorder.ui.activities.MusicCompositionActivity.EXTRA_BEAT_LENGTH;
 import static org.darkmentat.draftrecorder.ui.activities.MusicCompositionActivity.EXTRA_BPM;
+import static org.darkmentat.draftrecorder.ui.activities.MusicCompositionActivity.EXTRA_RECORD_FILE;
 
 @SuppressWarnings("deprecation")
 @EActivity(R.layout.activity_capture_sound)
@@ -76,7 +79,6 @@ public class CaptureSoundActivity extends AppCompatActivity implements Player.Pl
   public void setPlayer(Player player){
     if(mPlayer == null) mPlayer = player;
 
-    mPlayer.setFileName("test_mic.mp3");
     mPlayer.setPlayerListener(this);
   }
   @Bean
@@ -115,7 +117,7 @@ public class CaptureSoundActivity extends AppCompatActivity implements Player.Pl
     switchToCaptured();
   }
   @Click(R.id.play_sound) void onPlaySound(){
-    mPlayer.playStart();
+    mPlayer.playStart(mRecorder.getTempRecordFile());
     switchToPlaying();
   }
   @Click(R.id.stop_sound) void onStopSound(){
@@ -229,13 +231,14 @@ public class CaptureSoundActivity extends AppCompatActivity implements Player.Pl
     builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
       @Override
       public void onClick(DialogInterface dialog, int whichButton) {
-        mRecorder.saveFile(mCompositionName, input.getText().toString());
+        final File record = mRecorder.saveFile(mCompositionName, input.getText().toString());
 
         setResult(RESULT_OK, new Intent(){{
           putExtra(RESULT_RECORD_FILE_NAME, input.getText().toString());
           putExtra(EXTRA_BPM, mBpm);
           putExtra(EXTRA_BEATS, mBeats);
           putExtra(EXTRA_BEAT_LENGTH, mBeatLength);
+          putExtra(EXTRA_RECORD_FILE, record);
         }});
 
         finish();

@@ -1,5 +1,6 @@
 package org.darkmentat.draftrecorder.domain;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -81,7 +82,11 @@ public class MusicComposition {
 
   public static class Record {
 
+    private File mFile;
 
+    public Record(File file) {
+      mFile = file;
+    }
   }
 
   private int mId;

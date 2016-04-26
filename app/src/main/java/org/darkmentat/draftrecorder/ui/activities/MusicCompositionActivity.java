@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.Extra;
 import org.androidannotations.annotations.OptionsItem;
@@ -19,6 +20,7 @@ import org.darkmentat.draftrecorder.domain.MusicComposition.Record;
 import org.darkmentat.draftrecorder.domain.MusicComposition.Region;
 import org.darkmentat.draftrecorder.domain.MusicComposition.Track;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.List;
 
@@ -35,6 +37,7 @@ public class MusicCompositionActivity extends AppCompatActivity {
   public static final String EXTRA_BPM = "BPM";
   public static final String EXTRA_BEATS = "BEATS";
   public static final String EXTRA_BEAT_LENGTH = "BEAT_LENGTH";
+  public static final String EXTRA_RECORD_FILE = "RECORD_FILE";
 
   public static final String EXTRA_COMPOSITION_NAME = "COMPOSITION_NAME";
 
@@ -143,7 +146,9 @@ public class MusicCompositionActivity extends AppCompatActivity {
       region.setBeatLength(beatLength);
     }
 
-    Record record = new Record();
+    File file = (File) data.getSerializableExtra(EXTRA_RECORD_FILE);
+
+    Record record = new Record(file);
     track.addRecord(record);
 
     createRecordView((LinearLayout) ((LinearLayout) mRegionContainer.getChildAt(0)).getChildAt(0), record);

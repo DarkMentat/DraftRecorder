@@ -22,6 +22,9 @@ public class Recorder {
   private int mBeats;
   private int mBeatLength;
 
+  public String getTempRecordFile(){
+    return mContext.getExternalFilesDir(null).getAbsolutePath() + "/" + NEW_SOUND_FILE;
+  }
   public void recordStart(int bpm, int beats, int beatLength) {
     try {
       releaseRecorder();
@@ -40,7 +43,7 @@ public class Recorder {
       mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
       mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
       mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-      mMediaRecorder.setOutputFile(mContext.getExternalFilesDir(null).getAbsolutePath() + "/" + NEW_SOUND_FILE);
+      mMediaRecorder.setOutputFile(getTempRecordFile());
       mMediaRecorder.prepare();
       mMediaRecorder.start();
 
@@ -61,7 +64,7 @@ public class Recorder {
   }
 
   @SuppressWarnings("ResultOfMethodCallIgnored")
-  public void saveFile(String compositionName, String name){
+  public File saveFile(String compositionName, String name){
     String fileName = name + " " + mBpm + " " + mBeats + " " + mBeatLength + ".mp3";
 
     File home = mContext.getExternalFilesDir(null);
@@ -76,5 +79,7 @@ public class Recorder {
     File to = new File(dir, fileName);
 
     from.renameTo(to);
+
+    return to;
   }
 }
