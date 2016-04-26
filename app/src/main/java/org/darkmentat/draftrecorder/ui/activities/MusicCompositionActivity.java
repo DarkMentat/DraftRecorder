@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.Extra;
@@ -19,6 +20,7 @@ import org.darkmentat.draftrecorder.domain.MusicComposition;
 import org.darkmentat.draftrecorder.domain.MusicComposition.Record;
 import org.darkmentat.draftrecorder.domain.MusicComposition.Region;
 import org.darkmentat.draftrecorder.domain.MusicComposition.Track;
+import org.darkmentat.draftrecorder.media.Player;
 
 import java.io.File;
 import java.util.Collection;
@@ -43,13 +45,24 @@ public class MusicCompositionActivity extends AppCompatActivity {
 
   @Extra(EXTRA_COMPOSITION_NAME) String mCompositionName = "";
 
-  private MusicComposition mMusicComposition = new MusicComposition(0, mCompositionName);
-  {
-    mMusicComposition.addRegion(new MusicComposition.Region());
-  }
+  private MusicComposition mMusicComposition = new MusicComposition(0, mCompositionName){{
+    addRegion(new MusicComposition.Region());
+  }};
+
+  private Player mPlayer;
+
+  private LinearLayout mLastSelectedRegionView = null;
+  private LinearLayout mLastSelectedTrackView = null;
 
   @ViewById(R.id.toolbar) Toolbar mToolbar;
   @ViewById(R.id.region_container) LinearLayout mRegionContainer;
+
+  @Bean
+  public void setPlayer(Player player){
+    if(mPlayer == null) mPlayer = player;
+
+    //mPlayer.setPlayerListener(this);
+  }
 
   @AfterViews void bindActionBar() {
     setSupportActionBar(mToolbar);
@@ -70,7 +83,13 @@ public class MusicCompositionActivity extends AppCompatActivity {
   }
 
   @OptionsItem(R.id.action_add_track) void onAddTrack(){
-    createTrackView((LinearLayout) mRegionContainer.getChildAt(0), new Track());
+    mLastSelectedRegionView = (LinearLayout) mRegionContainer.getChildAt(0);
+
+    Region region = (Region) mLastSelectedRegionView.getTag();
+    Track track = new Track();
+    region.addTrack(track);
+
+    createTrackView(mLastSelectedRegionView, track);
   }
 
   private LinearLayout createRegionView(Region region) {
@@ -95,7 +114,9 @@ public class MusicCompositionActivity extends AppCompatActivity {
 
     trackView.setOnLongClickListener(new View.OnLongClickListener() {
       @Override public boolean onLongClick(View v) {
-        if(((Region) regionView.getTag()).hasSomeRecord()){
+        mLastSelectedTrackView = trackView;
+
+        if(!((Region) regionView.getTag()).hasSomeRecord()){
           CaptureSoundActivity_.intent(MusicCompositionActivity.this)
               .extra(EXTRA_COMPOSITION_NAME, mCompositionName)
               .startForResult(REQUEST_NEW_RECORD);
@@ -133,8 +154,8 @@ public class MusicCompositionActivity extends AppCompatActivity {
     if(resultCode != RESULT_OK)
       return;
 
-    Region region = (Region) mRegionContainer.getChildAt(0).getTag();
-    Track track = (Track) ((LinearLayout) mRegionContainer.getChildAt(0)).getChildAt(0).getTag();
+    Region region = (Region) mLastSelectedRegionView.getTag();
+    Track track = (Track) mLastSelectedTrackView.getTag();
 
     if(!region.hasSomeRecord()){
       int bpm = data.getIntExtra(EXTRA_BPM, -1);
@@ -151,6 +172,6 @@ public class MusicCompositionActivity extends AppCompatActivity {
     Record record = new Record(file);
     track.addRecord(record);
 
-    createRecordView((LinearLayout) ((LinearLayout) mRegionContainer.getChildAt(0)).getChildAt(0), record);
+    createRecordView(mLastSelectedTrackView, record);
   }
 }

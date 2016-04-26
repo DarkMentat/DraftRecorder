@@ -27,6 +27,9 @@ public class MusicComposition {
     public void addTrack(int position, Track track){
       mTracks.put(position, track);
     }
+    public void addTrack(Track track) {
+      mTracks.put(mTracks.size(), track);
+    }
     public void removeTrack(int position){
       mTracks.remove(position);
     }
