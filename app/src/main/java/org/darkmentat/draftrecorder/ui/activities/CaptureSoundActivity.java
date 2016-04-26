@@ -12,7 +12,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
-import org.androidannotations.annotations.AfterExtras;
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.Click;
@@ -26,6 +25,7 @@ import org.darkmentat.draftrecorder.media.Recorder;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
+import static org.darkmentat.draftrecorder.ui.activities.MusicCompositionActivity.EXTRA_COMPOSITION_NAME;
 import static org.darkmentat.draftrecorder.ui.activities.MusicCompositionActivity.EXTRA_BEATS;
 import static org.darkmentat.draftrecorder.ui.activities.MusicCompositionActivity.EXTRA_BEAT_LENGTH;
 import static org.darkmentat.draftrecorder.ui.activities.MusicCompositionActivity.EXTRA_BPM;
@@ -53,6 +53,7 @@ public class CaptureSoundActivity extends AppCompatActivity implements Player.Pl
   Recorder mRecorder;
   Player mPlayer;
 
+  @Extra(EXTRA_COMPOSITION_NAME) String mCompositionName = "";
   @Extra(EXTRA_BPM) int mBpm = -1;
   @Extra(EXTRA_BEATS) int mBeats = -1;
   @Extra(EXTRA_BEAT_LENGTH) int mBeatLength = -1;
@@ -228,7 +229,7 @@ public class CaptureSoundActivity extends AppCompatActivity implements Player.Pl
     builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
       @Override
       public void onClick(DialogInterface dialog, int whichButton) {
-        mRecorder.saveFile(input.getText().toString());
+        mRecorder.saveFile(mCompositionName, input.getText().toString());
 
         setResult(RESULT_OK, new Intent(){{
           putExtra(RESULT_RECORD_FILE_NAME, input.getText().toString());

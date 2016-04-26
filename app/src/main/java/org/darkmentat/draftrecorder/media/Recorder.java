@@ -1,9 +1,11 @@
 package org.darkmentat.draftrecorder.media;
 
+import android.content.Context;
 import android.media.MediaRecorder;
 import android.os.Environment;
 
 import org.androidannotations.annotations.EBean;
+import org.androidannotations.annotations.RootContext;
 
 import java.io.File;
 
@@ -13,6 +15,8 @@ public class Recorder {
   public static final String NEW_SOUND_FILE = "newsound.mp3";
 
   private MediaRecorder mMediaRecorder;
+
+  @RootContext Context mContext;
 
   private int mBpm;
   private int mBeats;
@@ -36,7 +40,7 @@ public class Recorder {
       mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
       mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
       mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-      mMediaRecorder.setOutputFile(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + NEW_SOUND_FILE);
+      mMediaRecorder.setOutputFile(mContext.getExternalFilesDir(null).getAbsolutePath() + "/" + NEW_SOUND_FILE);
       mMediaRecorder.prepare();
       mMediaRecorder.start();
 
@@ -56,13 +60,21 @@ public class Recorder {
     }
   }
 
-  public void saveFile(String name){
+  @SuppressWarnings("ResultOfMethodCallIgnored")
+  public void saveFile(String compositionName, String name){
     String fileName = name + " " + mBpm + " " + mBeats + " " + mBeatLength + ".mp3";
 
-    File from = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), NEW_SOUND_FILE);
-    File to = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), fileName);
+    File home = mContext.getExternalFilesDir(null);
+    File dir = home;
 
-    //noinspection ResultOfMethodCallIgnored
+    if(!compositionName.isEmpty()){
+      dir = new File(dir, compositionName);
+      dir.mkdir();
+    }
+
+    File from = new File(home, NEW_SOUND_FILE);
+    File to = new File(dir, fileName);
+
     from.renameTo(to);
   }
 }

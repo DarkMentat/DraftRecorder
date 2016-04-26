@@ -9,6 +9,7 @@ import android.widget.LinearLayout;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.Extra;
 import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.ViewById;
@@ -35,7 +36,11 @@ public class MusicCompositionActivity extends AppCompatActivity {
   public static final String EXTRA_BEATS = "BEATS";
   public static final String EXTRA_BEAT_LENGTH = "BEAT_LENGTH";
 
-  private MusicComposition mMusicComposition = new MusicComposition(0, "TestComposition");
+  public static final String EXTRA_COMPOSITION_NAME = "COMPOSITION_NAME";
+
+  @Extra(EXTRA_COMPOSITION_NAME) String mCompositionName = "";
+
+  private MusicComposition mMusicComposition = new MusicComposition(0, mCompositionName);
   {
     mMusicComposition.addRegion(new MusicComposition.Region());
   }
@@ -88,9 +93,12 @@ public class MusicCompositionActivity extends AppCompatActivity {
     trackView.setOnLongClickListener(new View.OnLongClickListener() {
       @Override public boolean onLongClick(View v) {
         if(((Region) regionView.getTag()).hasSomeRecord()){
-          CaptureSoundActivity_.intent(MusicCompositionActivity.this).startForResult(REQUEST_NEW_RECORD);
+          CaptureSoundActivity_.intent(MusicCompositionActivity.this)
+              .extra(EXTRA_COMPOSITION_NAME, mCompositionName)
+              .startForResult(REQUEST_NEW_RECORD);
         } else {
           CaptureSoundActivity_.intent(MusicCompositionActivity.this)
+              .extra(EXTRA_COMPOSITION_NAME, mCompositionName)
               .extra(EXTRA_BPM, ((Region) regionView.getTag()).getBpm())
               .extra(EXTRA_BEATS, ((Region) regionView.getTag()).getBeats())
               .extra(EXTRA_BEAT_LENGTH, ((Region) regionView.getTag()).getBeatLength())
@@ -106,7 +114,7 @@ public class MusicCompositionActivity extends AppCompatActivity {
   }
   private void createRecordView(LinearLayout trackView, Record record){
     View recordView = new View(this);
-    recordView.setLayoutParams(new LinearLayout.LayoutParams(170, 90));
+    recordView.setLayoutParams(new LinearLayout.LayoutParams(170, 90){{setMargins(0,0,5,0);}});
     recordView.setBackgroundColor(Color.DKGRAY);
     recordView.setTag(record);
 
