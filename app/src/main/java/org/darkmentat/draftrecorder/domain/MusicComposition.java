@@ -78,6 +78,9 @@ public class MusicComposition {
     public void removeRecord(Record record){
       mRecords.remove(record);
     }
+    public List<Record> getRecords() {
+      return mRecords;
+    }
     public boolean hasSomeRecord(){
       return !mRecords.isEmpty();
     }
@@ -89,6 +92,10 @@ public class MusicComposition {
 
     public Record(File file) {
       mFile = file;
+    }
+
+    public File getFile() {
+      return mFile;
     }
   }
 

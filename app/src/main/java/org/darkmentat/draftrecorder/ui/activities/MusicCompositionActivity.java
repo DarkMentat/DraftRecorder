@@ -2,6 +2,7 @@ package org.darkmentat.draftrecorder.ui.activities;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -32,7 +33,7 @@ import static android.widget.LinearLayout.HORIZONTAL;
 import static android.widget.LinearLayout.VERTICAL;
 
 @EActivity(R.layout.activity_music_composition) @OptionsMenu(R.menu.menu_music_composition)
-public class MusicCompositionActivity extends AppCompatActivity {
+public class MusicCompositionActivity extends AppCompatActivity implements Player.PlayerListener {
 
   public static final int REQUEST_NEW_RECORD = 1;
 
@@ -54,6 +55,7 @@ public class MusicCompositionActivity extends AppCompatActivity {
   private LinearLayout mLastSelectedRegionView = null;
   private LinearLayout mLastSelectedTrackView = null;
 
+  @ViewById(R.id.fab) FloatingActionButton mFab;
   @ViewById(R.id.toolbar) Toolbar mToolbar;
   @ViewById(R.id.region_container) LinearLayout mRegionContainer;
 
@@ -61,7 +63,7 @@ public class MusicCompositionActivity extends AppCompatActivity {
   public void setPlayer(Player player){
     if(mPlayer == null) mPlayer = player;
 
-    //mPlayer.setPlayerListener(this);
+    mPlayer.setPlayerListener(this);
   }
 
   @AfterViews void bindActionBar() {
@@ -173,5 +175,16 @@ public class MusicCompositionActivity extends AppCompatActivity {
     track.addRecord(record);
 
     createRecordView(mLastSelectedTrackView, record);
+  }
+
+  @Click(R.id.fab) void onPlay(){
+    mPlayer.playStart(mMusicComposition);
+
+
+    mFab.setImageResource(android.R.drawable.ic_media_pause);
+  }
+
+  @Override public void onPlayingStop() {
+    mFab.setImageResource(android.R.drawable.ic_media_play);
   }
 }
