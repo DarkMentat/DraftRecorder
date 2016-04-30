@@ -129,4 +129,16 @@ public class MusicComposition {
   public List<Region> getRegions(){
     return mRegions;
   }
+  public int getTrackCount(){
+    int tracks = -1;
+
+    for(Region region : mRegions){
+      int regionTracks = region.getTracks().size();
+
+      if(regionTracks > tracks)
+        tracks = regionTracks;
+    }
+
+    return tracks;
+  }
 }

@@ -178,8 +178,12 @@ public class MusicCompositionActivity extends AppCompatActivity implements Playe
   }
 
   @Click(R.id.fab) void onPlay(){
-    mPlayer.playStart(mMusicComposition);
 
+    if(mPlayer.getPlayerState() == Player.PlayerState.STOPPED){
+      mPlayer.playStart(mMusicComposition);
+    } else {
+      mPlayer.playStop();
+    }
 
     mFab.setImageResource(android.R.drawable.ic_media_pause);
   }
