@@ -2,6 +2,7 @@ package org.darkmentat.draftrecorder.ui.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.CardView;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -12,6 +13,8 @@ import org.androidannotations.annotations.ViewById;
 
 import org.darkmentat.draftrecorder.R;
 import org.darkmentat.draftrecorder.domain.MusicComposition;
+import org.darkmentat.draftrecorder.ui.activities.MusicCompositionActivity;
+import org.darkmentat.draftrecorder.ui.activities.MusicCompositionActivity_;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -43,9 +46,16 @@ public class MusicCompositionsAdapter extends RecyclerViewAdapterBase<MusicCompo
     return MusicCompositionItemView_.build(mContext);
   }
   @Override public void onBindViewHolder(ViewWrapper<MusicCompositionItemView> viewHolder, int position) {
-    MusicCompositionItemView view = viewHolder.getView();
-    MusicComposition musicComposition = Items.get(position);
+    final MusicCompositionItemView view = viewHolder.getView();
+    final MusicComposition musicComposition = Items.get(position);
 
     view.bind(musicComposition);
+    view.setOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(View v) {
+        MusicCompositionActivity_.intent(mContext)
+            .extra(MusicCompositionActivity.EXTRA_COMPOSITION_NAME, musicComposition.getName())
+            .start();
+      }
+    });
   }
 }

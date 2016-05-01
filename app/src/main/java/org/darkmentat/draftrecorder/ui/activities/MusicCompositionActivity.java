@@ -17,10 +17,12 @@ import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.ViewById;
 import org.darkmentat.draftrecorder.R;
+import org.darkmentat.draftrecorder.domain.JsonFileMusicCompositionRepository;
 import org.darkmentat.draftrecorder.domain.MusicComposition;
 import org.darkmentat.draftrecorder.domain.MusicComposition.Record;
 import org.darkmentat.draftrecorder.domain.MusicComposition.Region;
 import org.darkmentat.draftrecorder.domain.MusicComposition.Track;
+import org.darkmentat.draftrecorder.domain.MusicCompositionRepository;
 import org.darkmentat.draftrecorder.media.Player;
 
 import java.io.File;
@@ -46,11 +48,10 @@ public class MusicCompositionActivity extends AppCompatActivity implements Playe
 
   @Extra(EXTRA_COMPOSITION_NAME) String mCompositionName = "";
 
-  private MusicComposition mMusicComposition = new MusicComposition(0, mCompositionName){{
-    addRegion(new MusicComposition.Region());
-  }};
+  private MusicComposition mMusicComposition;
 
   private Player mPlayer;
+  private MusicCompositionRepository mMusicCompositionRepository;
 
   private LinearLayout mLastSelectedRegionView = null;
   private LinearLayout mLastSelectedTrackView = null;
@@ -59,6 +60,11 @@ public class MusicCompositionActivity extends AppCompatActivity implements Playe
   @ViewById(R.id.toolbar) Toolbar mToolbar;
   @ViewById(R.id.region_container) LinearLayout mRegionContainer;
 
+
+  @Bean(JsonFileMusicCompositionRepository.class)
+  public void setMusicCompositionRepository(MusicCompositionRepository repository){
+    if(mMusicCompositionRepository == null) mMusicCompositionRepository = repository;
+  }
   @Bean
   public void setPlayer(Player player){
     if(mPlayer == null) mPlayer = player;
@@ -70,6 +76,23 @@ public class MusicCompositionActivity extends AppCompatActivity implements Playe
     setSupportActionBar(mToolbar);
   }
   @AfterViews void loadMusicComposition(){
+
+    mMusicComposition = mMusicCompositionRepository.getMusicCompositionsWithName(mCompositionName);
+
+    if(mMusicComposition == null){
+      mMusicComposition = new MusicComposition(0, mCompositionName){{
+        addRegion(new MusicComposition.Region());
+      }};
+      mMusicCompositionRepository.saveMusicComposition(mMusicComposition);
+    }
+
+    mRegionContainer.post(new Runnable() {
+      @Override public void run() {
+        bindCompositionToLayout();
+      }
+    });
+  }
+  private void bindCompositionToLayout(){
     List<Region> regions = mMusicComposition.getRegions();
 
     for(Region region : regions){
@@ -79,7 +102,13 @@ public class MusicCompositionActivity extends AppCompatActivity implements Playe
       Collection<Track> tracks = region.getTracks().values();
 
       for(Track track : tracks){
-        createTrackView(regionView, track);
+        LinearLayout trackView = createTrackView(regionView, track);
+
+        List<Record> records = track.getRecords();
+
+        for(Record record : records){
+          createRecordView(trackView, record);
+        }
       }
     }
   }
@@ -90,6 +119,8 @@ public class MusicCompositionActivity extends AppCompatActivity implements Playe
     Region region = (Region) mLastSelectedRegionView.getTag();
     Track track = new Track();
     region.addTrack(track);
+
+    mMusicCompositionRepository.saveMusicComposition(mMusicComposition);
 
     createTrackView(mLastSelectedRegionView, track);
   }
@@ -104,7 +135,7 @@ public class MusicCompositionActivity extends AppCompatActivity implements Playe
 
     return regionView;
   }
-  private void createTrackView(final LinearLayout regionView, final Track track){
+  private LinearLayout createTrackView(final LinearLayout regionView, final Track track){
     final LinearLayout trackView = new LinearLayout(this);
     trackView.setLayoutParams(new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT){{setMargins(0,5,0,5);}});
     trackView.setMinimumHeight(100);
@@ -137,6 +168,8 @@ public class MusicCompositionActivity extends AppCompatActivity implements Playe
     trackView.setTag(track);
 
     regionView.addView(trackView);
+
+    return trackView;
   }
   private void createRecordView(LinearLayout trackView, Record record){
     View recordView = new View(this);
@@ -175,6 +208,8 @@ public class MusicCompositionActivity extends AppCompatActivity implements Playe
     track.addRecord(record);
 
     createRecordView(mLastSelectedTrackView, record);
+
+    mMusicCompositionRepository.saveMusicComposition(mMusicComposition);
   }
 
   @Click(R.id.fab) void onPlay(){

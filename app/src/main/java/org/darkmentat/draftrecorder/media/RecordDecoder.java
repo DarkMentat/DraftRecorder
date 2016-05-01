@@ -44,6 +44,8 @@ public class RecordDecoder {
   private int mNoOutputCounter;
   private int mNoOutputCounterLimit;
 
+  private boolean mStarted = false;
+
   private long mPresentationTimeUs;
   private MusicComposition.Record mRecord;
 
@@ -71,6 +73,8 @@ public class RecordDecoder {
       mNoOutputCounterLimit = 10;
 
       mMediaCodecInfo = new MediaCodec.BufferInfo();
+
+      mStarted = true;
     }catch(IOException e){
       e.printStackTrace();
     }
@@ -126,6 +130,11 @@ public class RecordDecoder {
     return chunk;
   }
   public void stopRecordReading(){
+    if(!mStarted)
+      return;
+
+    mStarted = false;
+
     mCodec.stop();
     mCodec.release();
 

@@ -25,6 +25,16 @@ public abstract class RecyclerViewAdapterBase<T, V extends View> extends Recycle
   protected abstract V onCreateItemView(ViewGroup parent, int viewType);
 
   public void setItems(T[] items){
+    Items.clear();
     Collections.addAll(Items, items);
+
+    notifyDataSetChanged();
+  }
+  public void addItems(T[] items){
+    int indexFirstNewElement = Items.size();
+
+    Collections.addAll(Items, items);
+
+    notifyItemRangeInserted(indexFirstNewElement, items.length);
   }
 }
