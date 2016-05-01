@@ -8,6 +8,7 @@ import org.darkmentat.draftrecorder.domain.MusicComposition;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 public class RecordDecoder {
   private static final long TIMEOUT_US = 1000;
@@ -128,6 +129,16 @@ public class RecordDecoder {
     }
 
     return chunk;
+  }
+  public short[] readRecordChunkShorts(){
+    byte[] bytes = readRecordChunk();
+
+    if(bytes == null) return null;
+
+    short[] shorts = new short[bytes.length/2];
+    ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(shorts);
+
+    return shorts;
   }
   public void stopRecordReading(){
     if(!mStarted)

@@ -9,7 +9,7 @@ public class RecordMixer {
 
   private static class RecordList extends ArrayList<MusicComposition.Record> {}
 
-  private byte[] mergeChunks(byte[] chunk1, byte[] chunk2){
+  private short[] mergeChunks(short[] chunk1, short[] chunk2){
 
     if(chunk1 == null && chunk2 == null)
       return null;
@@ -21,38 +21,38 @@ public class RecordMixer {
       return chunk1;
 
 
-    byte[] basic = chunk1.length > chunk2.length ? chunk1 : chunk2;
-    byte[] mixin = chunk1.length <= chunk2.length ? chunk1 : chunk2;
+    short[] basic = chunk1.length > chunk2.length ? chunk1 : chunk2;
+    short[] mixin = chunk1.length <= chunk2.length ? chunk1 : chunk2;
 
     for(int i = 0; i < basic.length; i++){
 
-      byte mixinValue = i < mixin.length ?  mixin[i] : 0;
+      short mixinValue = i < mixin.length ?  mixin[i] : 0;
 
-      float mixed = basic[i] / 128.0f + mixinValue / 128.0f;
+      float mixed = basic[i] / 16384.0f + mixinValue / 16384.0f;
 
       // reduce the volume a bit:
-      // mixed *= 0.8;
+      mixed *= 0.8;
       // hard clipping
       if (mixed > 1.0f) mixed = 1.0f;
       if (mixed < -1.0f) mixed = -1.0f;
 
-      basic[i] = (byte)(mixed * 128.0f);
+      basic[i] = (short)(mixed * 16384.0f);
     }
 
     return basic;
   }
-  private byte[] getMixedChunk(RecordList[] tracks){
+  private short[] getMixedChunk(RecordList[] tracks){
 
     int trackCount = tracks.length;
 
     if(mDecoders == null)
       mDecoders = new RecordDecoder[trackCount];
 
-    byte[] mixedChunk = null;
+    short[] mixedChunk = null;
 
     for(int i = 0; i < trackCount; i++){
 
-      byte[] chunk = null;
+      short[] chunk = null;
 
       if(mDecoders[i] == null && !tracks[i].isEmpty()){
         mDecoders[i] = new RecordDecoder(tracks[i].get(0));
@@ -64,7 +64,7 @@ public class RecordMixer {
       }
 
       if(mDecoders[i] != null){
-        chunk = mDecoders[i].readRecordChunk();
+        chunk = mDecoders[i].readRecordChunkShorts();
       }
 
       if(chunk == null) {
@@ -104,7 +104,7 @@ public class RecordMixer {
     }
   }
 
-  public byte[] readChunk(){
+  public short[] readChunk(){
     return getMixedChunk(mTracksWithRecords);
   }
   public void releaseAll(){

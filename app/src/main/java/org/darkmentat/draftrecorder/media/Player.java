@@ -52,7 +52,7 @@ public class Player {
 
     while (!mStop) {
 
-      byte[] chunk = mixer.readChunk();
+      short[] chunk = mixer.readChunk();
 
       if(chunk == null)
         break;
