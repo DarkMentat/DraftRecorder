@@ -17,6 +17,10 @@ import java.util.Map;
 //    mMusicCompositions.put(5, new MusicComposition(5, "Test6", 80));
   }
 
+  @Override public MusicComposition getMusicCompositionsWithName(String name) {
+    return new MusicComposition(0, name);
+  }
+
   @Override public MusicComposition[] getAllMusicCompositions() {
     return mMusicCompositions.values().toArray(new MusicComposition[mMusicCompositions.size()]);
   }

@@ -99,8 +99,8 @@ public class MusicComposition {
     }
   }
 
-  private int mId;
-  private String mName;
+  private int mId = -1;
+  private String mName = "";
 
   private List<Region> mRegions = new ArrayList<>();
 
