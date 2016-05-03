@@ -46,6 +46,7 @@ public class Metronome {
   private int mBeat;
   private double mBeatSound;
   private double mSound;
+  private double mVolume = 1.0;
 
   private boolean mPlay = true;
 
@@ -74,8 +75,8 @@ public class Metronome {
     soundTockArray = new double[TICK_SAMPLES];
     silenceSoundArray = new double[silence];
 
-    double[] tick = mAudioGenerator.getSineWave(TICK_SAMPLES, 8000, mBeatSound);
-    double[] tock = mAudioGenerator.getSineWave(TICK_SAMPLES, 8000, mSound);
+    double[] tick = mAudioGenerator.getSineWave(TICK_SAMPLES, 8000, mBeatSound, mVolume);
+    double[] tock = mAudioGenerator.getSineWave(TICK_SAMPLES, 8000, mSound, mVolume);
 
     for(int i = 0; i< TICK_SAMPLES; i++) {
       soundTickArray[i] = tick[i];
@@ -150,5 +151,14 @@ public class Metronome {
   }
   public void setBeatLength(int beatLength) {
     mBeatLength = beatLength;
+  }
+  public void setVolume(double volume) {
+    if(volume > 1.0)
+      volume = 1.0;
+
+    if(volume < 0)
+      volume = 0;
+
+    mVolume = volume;
   }
 }

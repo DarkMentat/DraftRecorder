@@ -15,10 +15,10 @@ public class AudioGenerator {
         AudioTrack.MODE_STREAM);
   }
 
-  public double[] getSineWave(int samples,int sampleRate,double frequencyOfTone){
+  public double[] getSineWave(int samples,int sampleRate,double frequencyOfTone, double volume){
     double[] sample = new double[samples];
     for (int i = 0; i < samples; i++) {
-      sample[i] = Math.sin(2 * Math.PI * i / (sampleRate/frequencyOfTone));
+      sample[i] = volume * Math.sin(2 * Math.PI * i / (sampleRate/frequencyOfTone));
     }
     return sample;
   }
