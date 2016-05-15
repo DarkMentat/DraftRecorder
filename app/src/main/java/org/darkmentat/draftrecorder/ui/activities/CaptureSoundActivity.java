@@ -19,6 +19,9 @@ import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.Extra;
 import org.androidannotations.annotations.ViewById;
 import org.darkmentat.draftrecorder.R;
+import org.darkmentat.draftrecorder.domain.JsonFileMusicCompositionRepository;
+import org.darkmentat.draftrecorder.domain.MusicComposition;
+import org.darkmentat.draftrecorder.domain.MusicCompositionRepository;
 import org.darkmentat.draftrecorder.media.Metronome;
 import org.darkmentat.draftrecorder.media.Player;
 import org.darkmentat.draftrecorder.media.Recorder;
@@ -37,6 +40,10 @@ import static org.darkmentat.draftrecorder.ui.activities.MusicCompositionActivit
 @EActivity(R.layout.activity_capture_sound)
 public class CaptureSoundActivity extends AppCompatActivity implements Player.PlayerListener {
 
+  private enum State {CAPTURING, CAPTURED, PLAYING, EMPTY};
+  private enum BackgroundSound {METRONOME, REGION, NONE}
+
+
   public static final String RESULT_RECORD_FILE_NAME = "RESULT_RECORD_FILE_NAME";
 
   @ViewById(R.id.bpm) EditText mBpmText;  //todo replace with NumberPicker
@@ -52,9 +59,14 @@ public class CaptureSoundActivity extends AppCompatActivity implements Player.Pl
   @ViewById(R.id.delete_sound) Button mDeleteSound;
   @ViewById(R.id.save_sound) Button mSaveSound;
 
+  MusicCompositionRepository mMusicCompositionRepository;
+  MusicComposition mMusicComposition;
   Metronome mMetronome;
   Recorder mRecorder;
   Player mPlayer;
+
+  State mState = State.EMPTY;
+  BackgroundSound mBackgroundSound = BackgroundSound.REGION;
 
   @Extra(EXTRA_COMPOSITION_NAME) String mCompositionName = "";
   @Extra(EXTRA_BPM) int mBpm = -1;
@@ -69,6 +81,10 @@ public class CaptureSoundActivity extends AppCompatActivity implements Player.Pl
   };
 
 
+  @Bean(JsonFileMusicCompositionRepository.class)
+  public void setMusicCompositionRepository(MusicCompositionRepository repository){
+    if(mMusicCompositionRepository == null) mMusicCompositionRepository = repository;
+  }
   @Bean
   public void setMetronome(Metronome metronome){
     if(mMetronome == null) mMetronome = metronome;
@@ -92,6 +108,11 @@ public class CaptureSoundActivity extends AppCompatActivity implements Player.Pl
     setMetronomeConfig();
   }
   private void loadExtras(){
+
+    if(!mCompositionName.isEmpty()){
+      mMusicComposition = mMusicCompositionRepository.getMusicCompositionsWithName(mCompositionName);
+    }
+
     if(mBpm == -1 || mBeats == -1 || mBeatLength == -1)
       return;
 
@@ -106,13 +127,23 @@ public class CaptureSoundActivity extends AppCompatActivity implements Player.Pl
 
   @Click(R.id.start_capture) void onStartCapture(){
     mRecorder.recordStart(mBpm, mBeats, mBeatLength);
-    setMetronomeConfig();
-    mMetronome.start();
+
+
+    if(mBackgroundSound == BackgroundSound.METRONOME){
+      setMetronomeConfig();
+      mMetronome.start();
+    }
+
+    if(mBackgroundSound == BackgroundSound.REGION && mMusicComposition != null){
+      mPlayer.playStart(mMusicComposition);
+    }
+
     switchToCapturing();
   }
   @Click(R.id.stop_capture) void onStopCapture(){
     mRecorder.recordStop();
     mMetronome.stop();
+    mPlayer.playStop();
     resetMetronomeLeds();
     switchToCaptured();
   }
@@ -135,7 +166,8 @@ public class CaptureSoundActivity extends AppCompatActivity implements Player.Pl
   }
 
   public void onPlayingStop(){
-    switchToCaptured();
+    if(mState == State.PLAYING)
+      switchToCaptured();
   }
 
   private void setMetronomeConfig(){
@@ -184,6 +216,8 @@ public class CaptureSoundActivity extends AppCompatActivity implements Player.Pl
   }
 
   private void switchToCapturing(){
+    mState = State.CAPTURING;
+
     mStartCapture.setVisibility(GONE);
     mStopCapture.setVisibility(VISIBLE);
     mPlaySound.setVisibility(GONE);
@@ -193,6 +227,8 @@ public class CaptureSoundActivity extends AppCompatActivity implements Player.Pl
     mSaveSound.setVisibility(GONE);
   }
   private void switchToCaptured(){
+    mState = State.CAPTURED;
+
     mStartCapture.setVisibility(GONE);
     mStopCapture.setVisibility(GONE);
     mPlaySound.setVisibility(VISIBLE);
@@ -202,6 +238,8 @@ public class CaptureSoundActivity extends AppCompatActivity implements Player.Pl
     mSaveSound.setVisibility(VISIBLE);
   }
   private void switchToPlaying(){
+    mState = State.PLAYING;
+
     mStartCapture.setVisibility(GONE);
     mStopCapture.setVisibility(GONE);
     mPlaySound.setVisibility(GONE);
@@ -211,6 +249,8 @@ public class CaptureSoundActivity extends AppCompatActivity implements Player.Pl
     mSaveSound.setVisibility(VISIBLE);
   }
   private void switchToEmpty(){
+    mState = State.EMPTY;
+
     mStartCapture.setVisibility(VISIBLE);
     mStopCapture.setVisibility(GONE);
     mPlaySound.setVisibility(GONE);

@@ -111,6 +111,8 @@ public class MusicCompositionActivity extends AppCompatActivity implements Playe
         }
       }
     }
+
+    mLastSelectedRegionView = (LinearLayout) mRegionContainer.getChildAt(0);
   }
 
   @OptionsItem(R.id.action_add_track) void onAddTrack(){
@@ -149,18 +151,9 @@ public class MusicCompositionActivity extends AppCompatActivity implements Playe
       @Override public boolean onLongClick(View v) {
         mLastSelectedTrackView = trackView;
 
-        if(!((Region) regionView.getTag()).hasSomeRecord()){
-          CaptureSoundActivity_.intent(MusicCompositionActivity.this)
-              .extra(EXTRA_COMPOSITION_NAME, mCompositionName)
-              .startForResult(REQUEST_NEW_RECORD);
-        } else {
-          CaptureSoundActivity_.intent(MusicCompositionActivity.this)
-              .extra(EXTRA_COMPOSITION_NAME, mCompositionName)
-              .extra(EXTRA_BPM, ((Region) regionView.getTag()).getBpm())
-              .extra(EXTRA_BEATS, ((Region) regionView.getTag()).getBeats())
-              .extra(EXTRA_BEAT_LENGTH, ((Region) regionView.getTag()).getBeatLength())
-              .startForResult(REQUEST_NEW_RECORD);
-        }
+        Region region = (Region) regionView.getTag();
+
+        startCaptureSoundActivity(region);
         return true;
       }
     });
@@ -171,6 +164,26 @@ public class MusicCompositionActivity extends AppCompatActivity implements Playe
 
     return trackView;
   }
+
+  private void startCaptureSoundActivity(Region region) {
+
+    CaptureSoundActivity_.IntentBuilder_ intent = CaptureSoundActivity_
+        .intent(MusicCompositionActivity.this);
+
+    if(!region.hasSomeRecord()){
+      intent.extra(EXTRA_COMPOSITION_NAME, mCompositionName);
+    } else {
+      intent.extra(EXTRA_COMPOSITION_NAME, mCompositionName)
+            .extra(EXTRA_BPM, region.getBpm())
+            .extra(EXTRA_BEATS, region.getBeats())
+            .extra(EXTRA_BEAT_LENGTH, region.getBeatLength());
+    }
+
+
+
+    intent.startForResult(REQUEST_NEW_RECORD);
+  }
+
   private void createRecordView(LinearLayout trackView, Record record){
     View recordView = new View(this);
     recordView.setLayoutParams(new LinearLayout.LayoutParams(170, 90){{setMargins(0,0,5,0);}});

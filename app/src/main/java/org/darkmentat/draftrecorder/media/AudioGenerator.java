@@ -47,7 +47,9 @@ public class AudioGenerator {
   }
 
   public void stopAudioTrack() {
-    mAudioTrack.stop();
+    try{
+      mAudioTrack.stop();
+    }catch(IllegalStateException ignored){}
   }
 
   public void releaseAudioTrack() {
