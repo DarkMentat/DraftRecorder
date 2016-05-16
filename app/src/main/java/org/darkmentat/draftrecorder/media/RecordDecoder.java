@@ -10,6 +10,9 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+/**
+ * Thanks to: https://github.com/radhoo/android-openmxplayer
+ */
 public class RecordDecoder {
   private static final long TIMEOUT_US = 1000;
 
@@ -54,6 +57,14 @@ public class RecordDecoder {
     mRecord = record;
   }
 
+  public long getDuration(){
+    MediaFormat format = mExtractor.getTrackFormat(0);
+    return format.getLong(MediaFormat.KEY_DURATION);
+  }
+  public int getSampleRate(){
+    MediaFormat format = mExtractor.getTrackFormat(0);
+    return format.getInteger(MediaFormat.KEY_SAMPLE_RATE);
+  }
   public void startRecordReading(){
     try{
       mExtractor = new MediaExtractor();

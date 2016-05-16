@@ -1,7 +1,12 @@
 package org.darkmentat.draftrecorder.domain;
 
+import com.google.gson.annotations.Expose;
+
+import org.darkmentat.draftrecorder.media.RecordDecoder;
+
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -88,6 +93,10 @@ public class MusicComposition {
 
   public static class Record {
 
+    @Expose private long mDuration = 0;  //microseconds
+    @Expose private int mSampleRate = 0;
+    @Expose private short[] mSamples = null;
+
     private File mFile;
 
     public Record(File file) {
@@ -96,6 +105,57 @@ public class MusicComposition {
 
     public File getFile() {
       return mFile;
+    }
+
+    private void readData(){
+      RecordDecoder decoder = new RecordDecoder(this);
+
+      decoder.startRecordReading();
+
+      mDuration = decoder.getDuration();
+      mSampleRate = decoder.getSampleRate();
+
+      List<Short> shorts = new ArrayList<>();
+
+      short[] arr;
+
+      while(true){
+        arr = decoder.readRecordChunkShorts();
+
+        if(arr == null)
+          break;
+
+        for(short i : arr){
+          shorts.add(i);
+        }
+      }
+
+      mSamples = new short[shorts.size()];
+      int i = 0;
+      for(Short aShort : shorts){
+        mSamples[i++] = aShort;
+      }
+
+      decoder.stopRecordReading();
+    }
+
+    public long getDuration(){
+      if(mDuration ==  0)
+        readData();
+
+      return mDuration;
+    }
+    public int getSampleRate(){
+      if(mSampleRate == 0)
+        readData();
+
+      return mSampleRate;
+    }
+    public short[] getSamples(){
+      if(mSamples == null)
+        readData();
+
+      return mSamples;
     }
   }
 

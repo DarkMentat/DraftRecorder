@@ -24,6 +24,7 @@ import org.darkmentat.draftrecorder.domain.MusicComposition.Region;
 import org.darkmentat.draftrecorder.domain.MusicComposition.Track;
 import org.darkmentat.draftrecorder.domain.MusicCompositionRepository;
 import org.darkmentat.draftrecorder.media.Player;
+import org.darkmentat.draftrecorder.ui.views.WaveformView;
 
 import java.io.File;
 import java.util.Collection;
@@ -185,10 +186,14 @@ public class MusicCompositionActivity extends AppCompatActivity implements Playe
   }
 
   private void createRecordView(LinearLayout trackView, Record record){
-    View recordView = new View(this);
-    recordView.setLayoutParams(new LinearLayout.LayoutParams(170, 90){{setMargins(0,0,5,0);}});
-    recordView.setBackgroundColor(Color.DKGRAY);
+    WaveformView recordView = new WaveformView(this);
+    recordView.setLayoutParams(new LinearLayout.LayoutParams((int) (record.getDuration() / 20000L), 90){{setMargins(0,0,5,0);}});
+    //recordView.setBackgroundColor(Color.DKGRAY);
     recordView.setTag(record);
+
+    recordView.setChannels(1);
+    recordView.setSampleRate(record.getSampleRate());
+    recordView.setSamples(record.getSamples());
 
     trackView.addView(recordView);
   }
