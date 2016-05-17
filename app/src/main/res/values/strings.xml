@@ -16,4 +16,6 @@
     <string name="save_sound">Save</string>
     <string name="action_play">Play</string>
     <string name="action_add_track">Add track</string>
+    <string name="metronome">Metronome</string>
+    <string name="background_sound">Background sound</string>
 </resources>

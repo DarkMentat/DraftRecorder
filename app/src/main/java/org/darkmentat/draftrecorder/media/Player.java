@@ -37,9 +37,10 @@ public class Player {
   private PlayerState mState = STOPPED;
 
   private boolean mStop = false;
+  private boolean mAlreadyExecuted = false;
 
   @Background
-  public void playStart(MusicComposition composition) {
+  public void playStart(MusicComposition composition, Runnable executeOnPlay) {
     mStop = false;
 
     AudioTrack audioTrack = getAudioTrack();
@@ -50,12 +51,26 @@ public class Player {
 
     RecordMixer mixer = new RecordMixer(composition);
 
+    mixer.readChunk(); // todo костыль
+    mixer.readChunk(); // Суть в том, что при записи с воспроизведением звука запись начинается
+    mixer.readChunk(); // намного раньше, чем с метрономом. Таким образом, дорожка отстает.
+    mixer.readChunk(); // В принципе, это не критично, так как предполагается, что юзер обрежет края трека.
+    mixer.readChunk(); // Но хочется, что бы по-дефолту все было как можно синхроннее.
+
     while (!mStop) {
 
       short[] chunk = mixer.readChunk();
 
       if(chunk == null)
         break;
+
+      if(chunk.length == 0)
+        continue;
+
+      if(executeOnPlay != null && !mAlreadyExecuted){
+        executeOnPlay.run();
+        mAlreadyExecuted = true;
+      }
 
       audioTrack.write(chunk,0,chunk.length);
     }

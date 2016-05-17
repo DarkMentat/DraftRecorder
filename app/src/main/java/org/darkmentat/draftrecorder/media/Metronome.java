@@ -58,7 +58,7 @@ public class Metronome {
 
   private Handler mHandler;
   private int mBeatLength;
-
+  private boolean mAlreadyExecuted = false;
 
   public Metronome() {
     setBeat(4);
@@ -99,7 +99,7 @@ public class Metronome {
     return false;
   }
 
-  @Background public void start() {
+  @Background public void start(Runnable executeOnPlay) {
     mPlay = true;
     mAudioGenerator.createPlayer();
 
@@ -108,6 +108,11 @@ public class Metronome {
     calcSilence();
     do {
       Message msg = Message.obtain(mHandler, currentBeat, isBeatTock(currentBeat)? TOCK : TICK);
+
+      if(executeOnPlay != null && !mAlreadyExecuted){
+        executeOnPlay.run();
+        mAlreadyExecuted = true;
+      }
 
       if(isBeatTock(currentBeat))
         mAudioGenerator.writeSound(soundTockArray);

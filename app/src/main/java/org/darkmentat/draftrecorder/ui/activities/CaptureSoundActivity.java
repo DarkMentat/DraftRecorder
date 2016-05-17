@@ -52,6 +52,9 @@ public class CaptureSoundActivity extends AppCompatActivity implements Player.Pl
 
   @ViewById(R.id.metronome_leds) LinearLayout mMetronomeLeds;
 
+  @ViewById(R.id.use_metronome) Button mUseMetronome;
+  @ViewById(R.id.use_background_sound) Button mUseBackgroundSound;
+
   @ViewById(R.id.start_capture) Button mStartCapture;
   @ViewById(R.id.stop_capture) Button mStopCapture;
   @ViewById(R.id.play_sound) Button mPlaySound;
@@ -125,17 +128,28 @@ public class CaptureSoundActivity extends AppCompatActivity implements Player.Pl
     mSizeLengthText.setEnabled(false);
   }
 
-  @Click(R.id.start_capture) void onStartCapture(){
-    mRecorder.recordStart(mBpm, mBeats, mBeatLength);
+  @Click(R.id.use_metronome) void onUseMetronome(){
+    mUseMetronome.setVisibility(GONE);
+    mUseBackgroundSound.setVisibility(VISIBLE);
 
+    mBackgroundSound = BackgroundSound.METRONOME;
+  }
+  @Click(R.id.use_background_sound) void onBackgroundSound(){
+    mUseMetronome.setVisibility(VISIBLE);
+    mUseBackgroundSound.setVisibility(GONE);
+
+    mBackgroundSound = BackgroundSound.REGION;
+  }
+
+  @Click(R.id.start_capture) void onStartCapture(){
 
     if(mBackgroundSound == BackgroundSound.METRONOME){
       setMetronomeConfig();
-      mMetronome.start();
+      mMetronome.start(() -> mRecorder.recordStart(mBpm, mBeats, mBeatLength));
     }
 
     if(mBackgroundSound == BackgroundSound.REGION && mMusicComposition != null){
-      mPlayer.playStart(mMusicComposition);
+      mPlayer.playStart(mMusicComposition, () -> mRecorder.recordStart(mBpm, mBeats, mBeatLength));
     }
 
     switchToCapturing();

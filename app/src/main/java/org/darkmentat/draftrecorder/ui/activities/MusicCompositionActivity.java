@@ -233,7 +233,7 @@ public class MusicCompositionActivity extends AppCompatActivity implements Playe
   @Click(R.id.fab) void onPlay(){
 
     if(mPlayer.getPlayerState() == Player.PlayerState.STOPPED){
-      mPlayer.playStart(mMusicComposition);
+      mPlayer.playStart(mMusicComposition, null);
     } else {
       mPlayer.playStop();
     }

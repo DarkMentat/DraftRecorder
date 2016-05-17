@@ -11,6 +11,23 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="org.darkmentat.draftrecorder.ui.activities.CaptureSoundActivity">
 
+    <Button
+        android:id="@+id/use_metronome"
+        android:text="@string/background_sound"
+        android:layout_marginLeft="20pt"
+        android:layout_marginRight="20pt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="visible"/>
+    <Button
+        android:id="@+id/use_background_sound"
+        android:text="@string/metronome"
+        android:layout_marginLeft="20pt"
+        android:layout_marginRight="20pt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
