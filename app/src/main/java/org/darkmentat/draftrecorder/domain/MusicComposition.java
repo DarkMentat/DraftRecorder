@@ -98,9 +98,12 @@ public class MusicComposition {
     @Expose private short[] mSamples = null;
 
     private File mFile;
+    private String mFileName;
 
     public Record(File file) {
       mFile = file;
+
+      mFileName = mFile.getName();
     }
 
     public File getFile() {
@@ -156,6 +159,31 @@ public class MusicComposition {
         readData();
 
       return mSamples;
+    }
+
+    public int getBpm(){
+      if(mFileName == null){
+        mFileName = mFile.getName();
+      }
+
+      String[] split = mFileName.split("(\\s|\\.)");
+      return Integer.valueOf(split[split.length - 4]);
+    }
+    public int getBeats(){
+      if(mFileName == null){
+        mFileName = mFile.getName();
+      }
+
+      String[] split = mFileName.split("(\\s|\\.)");
+      return Integer.valueOf(split[split.length - 3]);
+    }
+    public int getBeatLength(){
+      if(mFileName == null){
+        mFileName = mFile.getName();
+      }
+
+      String[] split = mFileName.split("(\\s|\\.)");
+      return Integer.valueOf(split[split.length - 2]);
     }
   }
 

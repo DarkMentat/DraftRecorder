@@ -10,28 +10,32 @@ import android.graphics.Picture;
 import android.graphics.Rect;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
-import android.text.TextPaint;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.GestureDetector;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 
 import org.darkmentat.draftrecorder.R;
 import org.darkmentat.draftrecorder.utils.AudioUtils;
 import org.darkmentat.draftrecorder.utils.SamplingUtils;
-import org.darkmentat.draftrecorder.utils.TextUtils;
 
 import java.util.LinkedList;
 
 /**
  * Thanks to: https://github.com/newventuresoftware/WaveformControl
  */
-public class WaveformView extends View {
+public class WaveformView extends View implements GestureDetector.OnGestureListener {
   public static final int MODE_RECORDING = 1;
   public static final int MODE_PLAYBACK = 2;
 
   private static final int HISTORY_SIZE = 6;
 
+  private final GestureDetector mGestureDetector = new GestureDetector(getContext(), this);
+
 //  private TextPaint mTextPaint;
-  private Paint mStrokePaint, mFillPaint, mMarkerPaint;
+  private Paint mStrokePaint, mFillPaint, mMarkerPaint, mTempoGridPaint;
 
   // Used in draw
   private int brightness;
@@ -45,6 +49,12 @@ public class WaveformView extends View {
   private Picture mCachedWaveform;
   private Bitmap mCachedWaveformBitmap;
   private int colorDelta = 255 / (HISTORY_SIZE + 1);
+
+  private int mTempoBpm;
+  private int mTempoBeats;
+  private int mTempoBeatLength;
+
+  private boolean mCanChangeTempoGrid = true;
 
   public WaveformView(Context context) {
     super(context);
@@ -77,6 +87,8 @@ public class WaveformView extends View {
         ContextCompat.getColor(context, R.color.default_playback_indicator));
     int mTextColor = a.getColor(R.styleable.WaveformView_timecodeColor,
         ContextCompat.getColor(context, R.color.default_timecode));
+    int mTempoGridColor = a.getColor(R.styleable.WaveformView_tempogridColor,
+        ContextCompat.getColor(context, R.color.default_tempogrid));
 
     a.recycle();
 
@@ -103,6 +115,12 @@ public class WaveformView extends View {
     mMarkerPaint.setStrokeWidth(0);
     mMarkerPaint.setAntiAlias(true);
     mMarkerPaint.setColor(mMarkerColor);
+
+    mTempoGridPaint = new Paint();
+    mTempoGridPaint.setStyle(Paint.Style.STROKE);
+    mTempoGridPaint.setStrokeWidth(1);
+    mTempoGridPaint.setAntiAlias(true);
+    mTempoGridPaint.setColor(mTempoGridColor);
   }
 
   @Override
@@ -137,6 +155,8 @@ public class WaveformView extends View {
       }
     } else if (mMode == MODE_PLAYBACK) {
       if (mCachedWaveform != null) {
+
+
         canvas.drawPicture(mCachedWaveform);
       } else if (mCachedWaveformBitmap != null) {
         canvas.drawBitmap(mCachedWaveformBitmap, null, drawRect, null);
@@ -162,6 +182,12 @@ public class WaveformView extends View {
     mSamples = samples;
     calculateAudioLength();
     onSamplesChanged();
+  }
+
+  public void setTempo(int bpm, int beats, int BeatLength){
+    mTempoBpm = bpm;
+    mTempoBeats = beats;
+    mTempoBeatLength = BeatLength;
   }
 
   public int getMarkerPosition() {
@@ -293,6 +319,9 @@ public class WaveformView extends View {
     Path mWaveform = drawPlaybackWaveform(width, height, mSamples);
     cacheCanvas.drawPath(mWaveform, mFillPaint);
     cacheCanvas.drawPath(mWaveform, mStrokePaint);
+
+    drawTempoGrid(cacheCanvas, width);
+
     //drawAxis(cacheCanvas, width);
 
     if (mCachedWaveform != null)
@@ -309,5 +338,45 @@ public class WaveformView extends View {
 //    for (float i = 0; i <= seconds; i += secondStep) {
 //      canvas.drawText(String.format("%.2f", i), i * xStep, textHeight, mTextPaint);
 //    }
+  }
+
+  private void drawTempoGrid(Canvas canvas, int width){
+    float seconds = mAudioLength / 1000.0f;
+
+    float secondsStep = 60.0f / (mTempoBpm * mTempoBeatLength / 4);
+
+    float segmentSecond = width / seconds;
+
+    int height = canvas.getHeight();
+
+    for (float i = -3*secondsStep; i <= seconds+3*secondsStep; i += secondsStep) {
+      canvas.drawRect(segmentSecond*(i - secondsStep), 0, segmentSecond*i, height, mTempoGridPaint);
+    }
+  }
+
+  @Override public boolean onTouchEvent(MotionEvent event) {
+    return mGestureDetector.onTouchEvent(event);
+  }
+  @Override public boolean onDown(MotionEvent e) {
+    Log.d("Scroll", "down");
+    return false;
+  }
+  @Override public void onShowPress(MotionEvent e) {
+
+  }
+  @Override public boolean onSingleTapUp(MotionEvent e) {
+    return false;
+  }
+  @Override public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+
+    Log.d("Scroll", distanceX+"");
+    return true;
+  }
+
+  @Override public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+    return false;
+  }
+  @Override public void onLongPress(MotionEvent e) {
+
   }
 }

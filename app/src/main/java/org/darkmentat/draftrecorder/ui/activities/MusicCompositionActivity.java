@@ -6,6 +6,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 
 import org.androidannotations.annotations.AfterViews;
@@ -148,15 +149,13 @@ public class MusicCompositionActivity extends AppCompatActivity implements Playe
     trackView.setPadding(5,5,5,5);
     trackView.setBackgroundColor(Color.LTGRAY);
 
-    trackView.setOnLongClickListener(new View.OnLongClickListener() {
-      @Override public boolean onLongClick(View v) {
-        mLastSelectedTrackView = trackView;
+    trackView.setOnLongClickListener(v -> {
+      mLastSelectedTrackView = trackView;
 
-        Region region = (Region) regionView.getTag();
+      Region region = (Region) regionView.getTag();
 
-        startCaptureSoundActivity(region);
-        return true;
-      }
+      startCaptureSoundActivity(region);
+      return true;
     });
 
     trackView.setTag(track);
@@ -187,13 +186,14 @@ public class MusicCompositionActivity extends AppCompatActivity implements Playe
 
   private void createRecordView(LinearLayout trackView, Record record){
     WaveformView recordView = new WaveformView(this);
-    recordView.setLayoutParams(new LinearLayout.LayoutParams((int) (record.getDuration() / 20000L), 90){{setMargins(0,0,5,0);}});
+    recordView.setLayoutParams(new LinearLayout.LayoutParams((int) (record.getDuration() / 5000L), 180){{setMargins(0,0,5,0);}});
     //recordView.setBackgroundColor(Color.DKGRAY);
     recordView.setTag(record);
 
     recordView.setChannels(1);
     recordView.setSampleRate(record.getSampleRate());
     recordView.setSamples(record.getSamples());
+    recordView.setTempo(record.getBpm(), record.getBeats(), record.getBeatLength());
 
     trackView.addView(recordView);
   }
