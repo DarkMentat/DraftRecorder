@@ -1,19 +1,17 @@
 package org.darkmentat.draftrecorder.domain;
 
-import com.google.gson.annotations.Expose;
-
 import org.darkmentat.draftrecorder.media.RecordDecoder;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MusicComposition {
+public class MusicComposition implements Serializable {
 
-  public static class Region {
+  public static class Region implements Serializable {
     private int mBpm;
     private int mBeats;
     private int mBeatLength;
@@ -73,7 +71,7 @@ public class MusicComposition {
     }
   }
 
-  public static class Track {
+  public static class Track implements Serializable {
 
     private List<Record> mRecords = new ArrayList<>();
 
@@ -91,11 +89,13 @@ public class MusicComposition {
     }
   }
 
-  public static class Record {
+  public static class Record implements Serializable {
 
-    @Expose private long mDuration = 0;  //microseconds
-    @Expose private int mSampleRate = 0;
-    @Expose private short[] mSamples = null;
+    private transient long mDuration = 0;  //microseconds
+    private transient int mSampleRate = 0;
+    private transient short[] mSamples = null;
+
+    private float mStartFromSecond = 0.0f;
 
     private File mFile;
     private String mFileName;
@@ -184,6 +184,13 @@ public class MusicComposition {
 
       String[] split = mFileName.split("(\\s|\\.)");
       return Integer.valueOf(split[split.length - 2]);
+    }
+
+    public float getStartFromSecond() {
+      return mStartFromSecond;
+    }
+    public void setStartFromSecond(float startFromSecond) {
+      mStartFromSecond = startFromSecond;
     }
   }
 

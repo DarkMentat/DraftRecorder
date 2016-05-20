@@ -18,4 +18,7 @@
     <string name="action_add_track">Add track</string>
     <string name="metronome">Metronome</string>
     <string name="background_sound">Background sound</string>
+    <string name="save_record">Save record</string>
+    <string name="enable_grid_changing">Enable grid changing</string>
+    <string name="disable_grid_changing">Disable grid changing</string>
 </resources>

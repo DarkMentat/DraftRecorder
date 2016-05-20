@@ -5,8 +5,6 @@ import android.graphics.Color;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
-import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 
 import org.androidannotations.annotations.AfterViews;
@@ -35,11 +33,14 @@ import static android.view.Gravity.CENTER_VERTICAL;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import static android.widget.LinearLayout.HORIZONTAL;
 import static android.widget.LinearLayout.VERTICAL;
+import static org.darkmentat.draftrecorder.ui.activities.CutRecordActivity.EXTRA_RECORD;
+import static org.darkmentat.draftrecorder.ui.activities.CutRecordActivity.EXTRA_START_CUT_SECONDS;
 
 @EActivity(R.layout.activity_music_composition) @OptionsMenu(R.menu.menu_music_composition)
 public class MusicCompositionActivity extends AppCompatActivity implements Player.PlayerListener {
 
   public static final int REQUEST_NEW_RECORD = 1;
+  public static final int REQUEST_CUT_RECORD = 1;
 
   public static final String EXTRA_BPM = "BPM";
   public static final String EXTRA_BEATS = "BEATS";
@@ -55,6 +56,7 @@ public class MusicCompositionActivity extends AppCompatActivity implements Playe
   private Player mPlayer;
   private MusicCompositionRepository mMusicCompositionRepository;
 
+  private WaveformView mLastSelectedRecordView = null;
   private LinearLayout mLastSelectedRegionView = null;
   private LinearLayout mLastSelectedTrackView = null;
 
@@ -82,17 +84,13 @@ public class MusicCompositionActivity extends AppCompatActivity implements Playe
     mMusicComposition = mMusicCompositionRepository.getMusicCompositionsWithName(mCompositionName);
 
     if(mMusicComposition == null){
-      mMusicComposition = new MusicComposition(0, mCompositionName){{
-        addRegion(new MusicComposition.Region());
-      }};
+      mMusicComposition = new MusicComposition(0, mCompositionName);
+      mMusicComposition.addRegion(new MusicComposition.Region());
+
       mMusicCompositionRepository.saveMusicComposition(mMusicComposition);
     }
 
-    mRegionContainer.post(new Runnable() {
-      @Override public void run() {
-        bindCompositionToLayout();
-      }
-    });
+    mRegionContainer.post(this::bindCompositionToLayout);
   }
   private void bindCompositionToLayout(){
     List<Region> regions = mMusicComposition.getRegions();
@@ -195,11 +193,33 @@ public class MusicCompositionActivity extends AppCompatActivity implements Playe
     recordView.setSamples(record.getSamples());
     recordView.setTempo(record.getBpm(), record.getBeats(), record.getBeatLength());
 
+    recordView.setOnLongClickListener(v -> {
+          mLastSelectedRecordView = recordView;
+          CutRecordActivity_.intent(this)
+              .extra(EXTRA_RECORD, record)
+              .startForResult(REQUEST_CUT_RECORD);
+          return true;
+        }
+    );
+
     trackView.addView(recordView);
   }
 
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
+
+    if(requestCode == REQUEST_CUT_RECORD && resultCode == RESULT_OK){
+
+      Record record = (Record) mLastSelectedRecordView.getTag();
+
+      float startCut = data.getFloatExtra(EXTRA_START_CUT_SECONDS, 0.0f);
+
+      record.setStartFromSecond(startCut);
+
+      mMusicCompositionRepository.saveMusicComposition(mMusicComposition);
+
+      return;
+    }
 
     if(requestCode != REQUEST_NEW_RECORD)
       return;
