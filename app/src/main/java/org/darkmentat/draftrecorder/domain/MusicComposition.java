@@ -96,6 +96,7 @@ public class MusicComposition implements Serializable {
     private transient short[] mSamples = null;
 
     private float mStartFromSecond = 0.0f;
+    private float mLastSecond = -1;
 
     private File mFile;
     private String mFileName;
@@ -191,6 +192,13 @@ public class MusicComposition implements Serializable {
     }
     public void setStartFromSecond(float startFromSecond) {
       mStartFromSecond = startFromSecond;
+    }
+
+    public float getLastSecond() {
+      return mLastSecond;
+    }
+    public void setLastSecond(float lastSecond) {
+      mLastSecond = lastSecond;
     }
   }
 

@@ -11,6 +11,7 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -54,6 +55,7 @@ public class WaveformView extends View implements GestureDetector.OnGestureListe
 
   private boolean mCanChangeTempoGrid = false;
   private float mOffsetTempoGridSeconds = 0.0f;
+  private float mLastSecond = -1f;
 
   public WaveformView(Context context) {
     super(context);
@@ -225,6 +227,9 @@ public class WaveformView extends View implements GestureDetector.OnGestureListe
       return;
 
     mAudioLength = AudioUtils.calculateAudioLength(mSamples.length, mSampleRate, mChannels);
+
+    if(mLastSecond < 0)
+      mLastSecond = mAudioLength / 1000.0f;
   }
 
   private void onSamplesChanged() {
@@ -347,7 +352,10 @@ public class WaveformView extends View implements GestureDetector.OnGestureListe
     int height = canvas.getHeight();
 
     for (float i = secondsStep; i <= seconds+secondsStep; i += secondsStep) {
-      canvas.drawRect(segmentSecond*(mOffsetTempoGridSeconds + i - secondsStep), 0, segmentSecond*(mOffsetTempoGridSeconds + i), height, mTempoGridPaint);
+      float left = segmentSecond*(mOffsetTempoGridSeconds + i - secondsStep);
+      float right = segmentSecond*(mOffsetTempoGridSeconds + i < mLastSecond ? mOffsetTempoGridSeconds + i : mLastSecond);
+
+      canvas.drawRect(left, 0, right, height, mTempoGridPaint);
     }
   }
 
@@ -368,13 +376,38 @@ public class WaveformView extends View implements GestureDetector.OnGestureListe
   }
   @Override public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
 
+    if(distanceX > 10)
+      return true;
+
+    boolean changingStartOffset = e1.getX() < 2*mLastSecond/3;
+
     float seconds = mAudioLength / 1000.0f;
     float segmentSecond = width / seconds;
 
-    mOffsetTempoGridSeconds -= distanceX / segmentSecond;
+    if(changingStartOffset){
 
-    if(mOffsetTempoGridSeconds < 0)
-      mOffsetTempoGridSeconds = 0.0f;
+      mOffsetTempoGridSeconds -= distanceX / segmentSecond;
+
+      if(mOffsetTempoGridSeconds < 0)
+        mOffsetTempoGridSeconds = 0.0f;
+
+    }else{
+
+      mLastSecond -= distanceX / segmentSecond;
+
+      if(mLastSecond > seconds)
+        mLastSecond = seconds;
+
+      if(mLastSecond < mOffsetTempoGridSeconds + 0.5f)
+        mLastSecond = mOffsetTempoGridSeconds + 0.5f;
+
+    }
+
+    Log.d("Scroll", "distanceX: "+distanceX);
+    Log.d("Scroll", "mOffsetTempoGridSeconds: "+mOffsetTempoGridSeconds);
+    Log.d("Scroll", "mLastSecond: "+mLastSecond);
+    Log.d("Scroll", "");
+
     invalidate();
     return true;
   }
@@ -394,5 +427,14 @@ public class WaveformView extends View implements GestureDetector.OnGestureListe
   }
   public void setStartCutSeconds(float seconds){
     mOffsetTempoGridSeconds = seconds;
+  }
+  public float getLastSecond() {
+    return mLastSecond;
+  }
+  public void setLastSecond(float lastSecond) {
+    if(lastSecond < 0)
+      return;
+
+    mLastSecond = lastSecond;
   }
 }

@@ -33,6 +33,7 @@ import static android.view.Gravity.CENTER_VERTICAL;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import static android.widget.LinearLayout.HORIZONTAL;
 import static android.widget.LinearLayout.VERTICAL;
+import static org.darkmentat.draftrecorder.ui.activities.CutRecordActivity.EXTRA_LAST_SECOND;
 import static org.darkmentat.draftrecorder.ui.activities.CutRecordActivity.EXTRA_RECORD;
 import static org.darkmentat.draftrecorder.ui.activities.CutRecordActivity.EXTRA_START_CUT_SECONDS;
 
@@ -213,8 +214,10 @@ public class MusicCompositionActivity extends AppCompatActivity implements Playe
       Record record = (Record) mLastSelectedRecordView.getTag();
 
       float startCut = data.getFloatExtra(EXTRA_START_CUT_SECONDS, 0.0f);
+      float endCut = data.getFloatExtra(EXTRA_LAST_SECOND, -1f);
 
       record.setStartFromSecond(startCut);
+      record.setLastSecond(endCut);
 
       mMusicCompositionRepository.saveMusicComposition(mMusicComposition);
 

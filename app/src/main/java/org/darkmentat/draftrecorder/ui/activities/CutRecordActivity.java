@@ -22,6 +22,7 @@ public class CutRecordActivity extends AppCompatActivity {
 
   public static final String EXTRA_RECORD = "EXTRA_RECORD";
   public static final String EXTRA_START_CUT_SECONDS = "EXTRA_START_CUT_SECONDS";
+  public static final String EXTRA_LAST_SECOND = "EXTRA_LAST_SECOND";
 
   @Extra(EXTRA_RECORD) MusicComposition.Record mRecord = null;
 
@@ -43,6 +44,7 @@ public class CutRecordActivity extends AppCompatActivity {
     mRecordView.setLayoutParams(new LinearLayout.LayoutParams((int) (mRecord.getDuration() / 2500L), 300){{setMargins(0,0,5,0);}});
 
     mRecordView.setStartCutSeconds(mRecord.getStartFromSecond());
+    mRecordView.setLastSecond(mRecord.getLastSecond());
     mRecordView.setChannels(1);
     mRecordView.setSampleRate(mRecord.getSampleRate());
     mRecordView.setSamples(mRecord.getSamples());
@@ -55,6 +57,7 @@ public class CutRecordActivity extends AppCompatActivity {
 
     setResult(RESULT_OK, new Intent(){{
       putExtra(EXTRA_START_CUT_SECONDS, mRecordView.getStartCutSeconds());
+      putExtra(EXTRA_LAST_SECOND, mRecordView.getLastSecond());
     }});
 
     finish();
