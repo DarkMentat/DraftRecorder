@@ -222,6 +222,9 @@ public class MusicCompositionActivity extends AppCompatActivity implements Playe
       record.setStartFromSecond(startCut);
       record.setLastSecond(endCut);
 
+      mLastSelectedRecordView.setStartCutSeconds(record.getStartFromSecond());
+      mLastSelectedRecordView.setLastSecond(record.getLastSecond());
+
       mMusicCompositionRepository.saveMusicComposition(mMusicComposition);
 
       return;

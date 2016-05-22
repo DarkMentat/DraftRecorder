@@ -91,6 +91,9 @@ public class RecordDecoder {
       e.printStackTrace();
     }
   }
+  public void seekToRecordStart(){
+    mExtractor.seekTo((long) (mRecord.getStartFromSecond()*1000000L), MediaExtractor.SEEK_TO_CLOSEST_SYNC);
+  }
   public byte[] readRecordChunk(){
 
     if(mSawOutputEOS)

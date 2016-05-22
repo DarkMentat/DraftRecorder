@@ -373,7 +373,7 @@ public class WaveformView extends View implements GestureDetector.OnGestureListe
 
     for (float i = secondsStep; i <= seconds+secondsStep; i += secondsStep) {
       float left = segmentSecond*(start + i - secondsStep);
-      float right = segmentSecond*(start + i < end ? start + i : mLastSecond);
+      float right = segmentSecond*(start + i < end ? start + i : end);
 
       canvas.drawRect(left, 0, right, height, mTempoGridPaint);
     }
@@ -447,6 +447,9 @@ public class WaveformView extends View implements GestureDetector.OnGestureListe
   }
   public void setStartCutSeconds(float seconds){
     mOffsetTempoGridSeconds = seconds;
+    calculateAudioLength();
+    onSamplesChanged();
+    invalidate();
   }
   public float getLastSecond() {
     return mLastSecond;
@@ -456,10 +459,15 @@ public class WaveformView extends View implements GestureDetector.OnGestureListe
       return;
 
     mLastSecond = lastSecond;
+    calculateAudioLength();
+    onSamplesChanged();
+    invalidate();
   }
 
   public void setShowCutEnds(boolean showCutEnds) {
     mShowCutEnds = showCutEnds;
     calculateAudioLength();
+    onSamplesChanged();
+    invalidate();
   }
 }

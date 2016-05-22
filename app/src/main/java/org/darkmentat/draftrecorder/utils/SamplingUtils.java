@@ -4,6 +4,10 @@ import java.util.Arrays;
 
 public final class SamplingUtils {
   public static short[][] getExtremes(short[] data, int sampleSize, int startIndex, int endIndex) {
+
+    if(endIndex > data.length)
+      endIndex = data.length;
+
     short[][] newData = new short[sampleSize][];
     int groupSize = (endIndex-startIndex) / sampleSize;
 

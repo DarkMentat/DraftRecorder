@@ -57,6 +57,7 @@ public class RecordMixer {
       if(mDecoders[i] == null && !tracks[i].isEmpty()){
         mDecoders[i] = new RecordDecoder(tracks[i].get(0));
         mDecoders[i].startRecordReading();
+        mDecoders[i].seekToRecordStart();
       }
 
       if(mDecoders[i] == null){
