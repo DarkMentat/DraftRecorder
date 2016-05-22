@@ -316,11 +316,11 @@ public class WaveformView extends View implements GestureDetector.OnGestureListe
       mCachedWaveform = new Picture();
       cacheCanvas = mCachedWaveform.beginRecording(width, height);
     } else {
-      mCachedWaveformBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+      mCachedWaveformBitmap = Bitmap.createBitmap(width/3, height/3, Bitmap.Config.ARGB_8888);
       cacheCanvas = new Canvas(mCachedWaveformBitmap);
     }
 
-    Path mWaveform = drawPlaybackWaveform(width, height, mSamples);
+    Path mWaveform = drawPlaybackWaveform(width/3, height/3, mSamples);
     cacheCanvas.drawPath(mWaveform, mFillPaint);
     cacheCanvas.drawPath(mWaveform, mStrokePaint);
 
@@ -376,13 +376,13 @@ public class WaveformView extends View implements GestureDetector.OnGestureListe
   }
   @Override public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
 
-    if(distanceX > 10)
+    if(distanceX > 20 || distanceX < -20)
       return true;
-
-    boolean changingStartOffset = e1.getX() < 2*mLastSecond/3;
 
     float seconds = mAudioLength / 1000.0f;
     float segmentSecond = width / seconds;
+
+    boolean changingStartOffset = e1.getX() < 2*mLastSecond*segmentSecond/3;
 
     if(changingStartOffset){
 
