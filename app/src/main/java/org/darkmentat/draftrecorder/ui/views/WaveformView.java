@@ -57,6 +57,8 @@ public class WaveformView extends View implements GestureDetector.OnGestureListe
   private float mOffsetTempoGridSeconds = 0.0f;
   private float mLastSecond = -1f;
 
+  private boolean mShowCutEnds = false;
+
   public WaveformView(Context context) {
     super(context);
     init(context, null, 0);
@@ -226,7 +228,14 @@ public class WaveformView extends View implements GestureDetector.OnGestureListe
     if (mSamples == null || mSampleRate == 0 || mChannels == 0)
       return;
 
-    mAudioLength = AudioUtils.calculateAudioLength(mSamples.length, mSampleRate, mChannels);
+    if(mShowCutEnds || mLastSecond < 0 || mOffsetTempoGridSeconds < 0.0000001f){
+      mAudioLength = AudioUtils.calculateAudioLength(mSamples.length, mSampleRate, mChannels);
+
+      if(mLastSecond < 0)
+        mLastSecond = mAudioLength / 1000.0f;
+    }else{
+      mAudioLength = (int) ((mLastSecond - mOffsetTempoGridSeconds) * 1000);
+    }
 
     if(mLastSecond < 0)
       mLastSecond = mAudioLength / 1000.0f;
@@ -286,7 +295,10 @@ public class WaveformView extends View implements GestureDetector.OnGestureListe
     float centerY = height / 2f;
     float max = Short.MAX_VALUE;
 
-    short[][] extremes = SamplingUtils.getExtremes(buffer, width);
+    int startIndex = mShowCutEnds ? 0 : AudioUtils.getIndexOfSecond(mOffsetTempoGridSeconds, mSampleRate, mChannels);
+    int endIndex = mShowCutEnds ? buffer.length-1 : AudioUtils.getIndexOfSecond(mLastSecond, mSampleRate, mChannels);
+
+    short[][] extremes = SamplingUtils.getExtremes(buffer, width, startIndex, endIndex);
 
     // draw maximums
     for (int x = 0; x < width; x++) {
@@ -351,9 +363,17 @@ public class WaveformView extends View implements GestureDetector.OnGestureListe
 
     int height = canvas.getHeight();
 
+    float start = mOffsetTempoGridSeconds;
+    float end = mLastSecond;
+
+    if(!mShowCutEnds){
+      start = 0;
+      end = seconds;
+    }
+
     for (float i = secondsStep; i <= seconds+secondsStep; i += secondsStep) {
-      float left = segmentSecond*(mOffsetTempoGridSeconds + i - secondsStep);
-      float right = segmentSecond*(mOffsetTempoGridSeconds + i < mLastSecond ? mOffsetTempoGridSeconds + i : mLastSecond);
+      float left = segmentSecond*(start + i - secondsStep);
+      float right = segmentSecond*(start + i < end ? start + i : mLastSecond);
 
       canvas.drawRect(left, 0, right, height, mTempoGridPaint);
     }
@@ -436,5 +456,10 @@ public class WaveformView extends View implements GestureDetector.OnGestureListe
       return;
 
     mLastSecond = lastSecond;
+  }
+
+  public void setShowCutEnds(boolean showCutEnds) {
+    mShowCutEnds = showCutEnds;
+    calculateAudioLength();
   }
 }

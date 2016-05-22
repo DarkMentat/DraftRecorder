@@ -45,6 +45,7 @@ public class CutRecordActivity extends AppCompatActivity {
 
     mRecordView.setStartCutSeconds(mRecord.getStartFromSecond());
     mRecordView.setLastSecond(mRecord.getLastSecond());
+    mRecordView.setShowCutEnds(true);
     mRecordView.setChannels(1);
     mRecordView.setSampleRate(mRecord.getSampleRate());
     mRecordView.setSamples(mRecord.getSamples());

@@ -3,13 +3,16 @@ package org.darkmentat.draftrecorder.utils;
 import java.util.Arrays;
 
 public final class SamplingUtils {
-  public static short[][] getExtremes(short[] data, int sampleSize) {
+  public static short[][] getExtremes(short[] data, int sampleSize, int startIndex, int endIndex) {
     short[][] newData = new short[sampleSize][];
-    int groupSize = data.length / sampleSize;
+    int groupSize = (endIndex-startIndex) / sampleSize;
 
     for (int i = 0; i < sampleSize; i++) {
-      short[] group = Arrays.copyOfRange(data, i * groupSize,
-          Math.min((i + 1) * groupSize, data.length));
+
+      int from = startIndex + i * groupSize;
+      int to = Math.min(startIndex + (i + 1) * groupSize, endIndex);
+
+      short[] group = Arrays.copyOfRange(data, from, to);
 
       // Fin min & max values
       short min = Short.MAX_VALUE, max = Short.MIN_VALUE;

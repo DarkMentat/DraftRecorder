@@ -191,6 +191,9 @@ public class MusicCompositionActivity extends AppCompatActivity implements Playe
 
     recordView.setChannels(1);
     recordView.setSampleRate(record.getSampleRate());
+    recordView.setShowCutEnds(false);
+    recordView.setStartCutSeconds(record.getStartFromSecond());
+    recordView.setLastSecond(record.getLastSecond());
     recordView.setSamples(record.getSamples());
     recordView.setTempo(record.getBpm(), record.getBeats(), record.getBeatLength());
 
