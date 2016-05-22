@@ -41,7 +41,7 @@ import static org.darkmentat.draftrecorder.ui.activities.CutRecordActivity.EXTRA
 public class MusicCompositionActivity extends AppCompatActivity implements Player.PlayerListener {
 
   public static final int REQUEST_NEW_RECORD = 1;
-  public static final int REQUEST_CUT_RECORD = 1;
+  public static final int REQUEST_CUT_RECORD = 2;
 
   public static final String EXTRA_BPM = "BPM";
   public static final String EXTRA_BEATS = "BEATS";
