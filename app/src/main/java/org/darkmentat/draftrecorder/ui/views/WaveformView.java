@@ -300,6 +300,8 @@ public class WaveformView extends View implements GestureDetector.OnGestureListe
 
     short[][] extremes = SamplingUtils.getExtremes(buffer, width, startIndex, endIndex);
 
+    waveformPath.moveTo(0, centerY);
+
     // draw maximums
     for (int x = 0; x < width; x++) {
       short sample = extremes[x][0];
