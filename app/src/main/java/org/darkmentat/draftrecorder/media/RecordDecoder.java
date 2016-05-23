@@ -94,6 +94,9 @@ public class RecordDecoder {
   public void seekToRecordStart(){
     mExtractor.seekTo((long) (mRecord.getStartFromSecond()*1000000L), MediaExtractor.SEEK_TO_CLOSEST_SYNC);
   }
+  public boolean isEnd(){
+    return mExtractor.getSampleTime() >= mRecord.getLastSecond()*1000000L;
+  }
   public byte[] readRecordChunk(){
 
     if(mSawOutputEOS)

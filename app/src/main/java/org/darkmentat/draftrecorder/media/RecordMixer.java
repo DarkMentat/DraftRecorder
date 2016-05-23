@@ -65,7 +65,7 @@ public class RecordMixer {
       }
 
       if(mDecoders[i] != null){
-        chunk = mDecoders[i].readRecordChunkShorts();
+        chunk = mDecoders[i].isEnd() ? null : mDecoders[i].readRecordChunkShorts();
       }
 
       if(chunk == null) {
