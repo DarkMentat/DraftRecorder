@@ -193,7 +193,7 @@ public class CaptureSoundActivity extends AppCompatActivity implements Player.Pl
     mMetronome.setBeat(mBeats);
     mMetronome.setBeatLength(mBeatLength);
 
-    mMetronome.setVolume(1.0);
+    mMetronome.setVolume(0.6);
 
     setMetronomeLeds(mBeats);
   }

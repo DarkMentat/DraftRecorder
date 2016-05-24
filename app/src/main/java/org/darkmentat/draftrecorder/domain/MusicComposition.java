@@ -151,7 +151,7 @@ public class MusicComposition implements Serializable {
     }
     public float getCutDurationSeconds(){
       if(mLastSecond < 0){
-        return getDuration() / 1000000f;
+        return getDuration() / 1000000f - mStartFromSecond;
       }
 
       return mLastSecond - mStartFromSecond;
