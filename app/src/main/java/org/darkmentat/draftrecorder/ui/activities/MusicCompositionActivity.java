@@ -185,7 +185,7 @@ public class MusicCompositionActivity extends AppCompatActivity implements Playe
 
   private void createRecordView(LinearLayout trackView, Record record){
     WaveformView recordView = new WaveformView(this);
-    recordView.setLayoutParams(new LinearLayout.LayoutParams((int) (record.getDuration() / 5000L), 180){{setMargins(0,0,5,0);}});
+    recordView.setLayoutParams(new LinearLayout.LayoutParams((int) (record.getCutDurationSeconds() * 100), 180){{setMargins(0,0,5,0);}});
     //recordView.setBackgroundColor(Color.DKGRAY);
     recordView.setTag(record);
 

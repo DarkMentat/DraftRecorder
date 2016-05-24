@@ -41,7 +41,7 @@ public class CutRecordActivity extends AppCompatActivity {
     mRecord.getSamples();
 
     mRecordView = new WaveformView(this);
-    mRecordView.setLayoutParams(new LinearLayout.LayoutParams((int) (mRecord.getDuration() / 2500L), 300){{setMargins(0,0,5,0);}});
+    mRecordView.setLayoutParams(new LinearLayout.LayoutParams((int) (mRecord.getCutDurationSeconds() * 400), 300){{setMargins(0,0,5,0);}});
 
     mRecordView.setStartCutSeconds(mRecord.getStartFromSecond());
     mRecordView.setLastSecond(mRecord.getLastSecond());
