@@ -21,4 +21,6 @@
     <string name="save_record">Save record</string>
     <string name="enable_grid_changing">Enable grid changing</string>
     <string name="disable_grid_changing">Disable grid changing</string>
+    <string name="menu">menu</string>
+    <string name="action_delete">Delete</string>
 </resources>

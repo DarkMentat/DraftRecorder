@@ -37,4 +37,9 @@ public abstract class RecyclerViewAdapterBase<T, V extends View> extends Recycle
 
     notifyItemRangeInserted(indexFirstNewElement, items.length);
   }
+  public void deleteItem(T item){
+    int index = Items.indexOf(item);
+    Items.remove(item);
+    notifyItemRemoved(index);
+  }
 }

@@ -225,7 +225,7 @@ public class MusicCompositionActivity extends AppCompatActivity implements Playe
       mLastSelectedRecordView.setStartCutSeconds(record.getStartFromSecond());
       mLastSelectedRecordView.setLastSecond(record.getLastSecond());
       mLastSelectedRecordView.setLayoutParams(new LinearLayout.LayoutParams((int) (record.getCutDurationSeconds() * 100), 180){{setMargins(0,0,5,0);}});
-      
+
       mMusicCompositionRepository.saveMusicComposition(mMusicComposition);
 
       return;
