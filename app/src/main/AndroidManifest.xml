@@ -22,6 +22,7 @@
         </activity>
         <activity android:name=".ui.activities.CaptureSoundActivity_"/>
         <activity android:name=".ui.activities.CutRecordActivity_"/>
+        <activity android:name=".ui.activities.TextNoteActivity_"/>
         <activity android:name=".ui.activities.MusicCompositionActivity_"
                   android:label="@string/app_name"
                   android:theme="@style/AppTheme.NoActionBar"/>

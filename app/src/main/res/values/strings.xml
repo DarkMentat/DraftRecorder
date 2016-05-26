@@ -29,4 +29,6 @@
     <string name="action_cut_record">Cut record</string>
     <string name="action_add_region">Add new region</string>
     <string name="add_region">Add region</string>
+    <string name="action_note">View note</string>
+    <string name="save_note">Save note</string>
 </resources>

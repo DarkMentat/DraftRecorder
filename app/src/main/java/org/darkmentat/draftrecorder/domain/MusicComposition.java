@@ -109,6 +109,8 @@ public class MusicComposition implements Serializable {
     private File mFile;
     private String mFileName;
 
+    private String mTextNote = "";
+
     public Record(File file) {
       mFile = file;
 
@@ -214,6 +216,13 @@ public class MusicComposition implements Serializable {
     }
     public void setLastSecond(float lastSecond) {
       mLastSecond = lastSecond;
+    }
+
+    public String getTextNote() {
+      return mTextNote;
+    }
+    public void setTextNote(String textNote) {
+      mTextNote = textNote;
     }
   }
 

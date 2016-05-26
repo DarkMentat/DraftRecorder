@@ -41,11 +41,13 @@ public class MusicCompositionActivity extends AppCompatActivity implements Playe
 
   public static final int REQUEST_NEW_RECORD = 1;
   public static final int REQUEST_CUT_RECORD = 2;
+  public static final int REQUEST_TEXT_NOTE = 3;
 
   public static final String EXTRA_BPM = "BPM";
   public static final String EXTRA_BEATS = "BEATS";
   public static final String EXTRA_BEAT_LENGTH = "BEAT_LENGTH";
   public static final String EXTRA_RECORD_FILE = "RECORD_FILE";
+  public static final String EXTRA_NOTE_TEXT = "EXTRA_NOTE_TEXT";
 
   public static final String EXTRA_COMPOSITION_NAME = "COMPOSITION_NAME";
 
@@ -236,11 +238,16 @@ public class MusicCompositionActivity extends AppCompatActivity implements Playe
   }
 
   private boolean showRecordViewPopUp(ViewGroup trackView, WaveformView recordView, Record record){
+    mLastSelectedRecordView = recordView;
+
     PopupMenu popupMenu = new PopupMenu(this, recordView);
     popupMenu.inflate(R.menu.menu_record_view);
 
     popupMenu.setOnMenuItemClickListener(item -> {
       switch (item.getItemId()){
+        case R.id.action_note:
+          TextNoteActivity_.intent(this).extra(EXTRA_NOTE_TEXT, record.getTextNote()).startForResult(REQUEST_TEXT_NOTE);
+          return true;
         case R.id.action_cut_record:
           mLastSelectedRecordView = recordView;
           CutRecordActivity_.intent(this)
@@ -267,52 +274,65 @@ public class MusicCompositionActivity extends AppCompatActivity implements Playe
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
 
-    if(requestCode == REQUEST_CUT_RECORD && resultCode == RESULT_OK){
+    switch(requestCode){
+      case REQUEST_CUT_RECORD:
+        if(resultCode != RESULT_OK)
+          break;
 
-      Record record = (Record) mLastSelectedRecordView.getTag();
+        Record record = (Record) mLastSelectedRecordView.getTag();
 
-      float startCut = data.getFloatExtra(EXTRA_START_CUT_SECONDS, 0.0f);
-      float endCut = data.getFloatExtra(EXTRA_LAST_SECOND, -1f);
+        float startCut = data.getFloatExtra(EXTRA_START_CUT_SECONDS, 0.0f);
+        float endCut = data.getFloatExtra(EXTRA_LAST_SECOND, -1f);
 
-      record.setStartFromSecond(startCut);
-      record.setLastSecond(endCut);
+        record.setStartFromSecond(startCut);
+        record.setLastSecond(endCut);
 
-      mLastSelectedRecordView.setStartCutSeconds(record.getStartFromSecond());
-      mLastSelectedRecordView.setLastSecond(record.getLastSecond());
-      mLastSelectedRecordView.setLayoutParams(new LinearLayout.LayoutParams((int) (record.getCutDurationSeconds() * 100), 180){{setMargins(0,0,5,0);}});
+        mLastSelectedRecordView.setStartCutSeconds(record.getStartFromSecond());
+        mLastSelectedRecordView.setLastSecond(record.getLastSecond());
+        mLastSelectedRecordView.setLayoutParams(new LinearLayout.LayoutParams((int) (record.getCutDurationSeconds() * 100), 180){{setMargins(0,0,5,0);}});
 
-      mMusicCompositionRepository.saveMusicComposition(mMusicComposition);
+        mMusicCompositionRepository.saveMusicComposition(mMusicComposition);
 
-      return;
+        break;
+
+      case REQUEST_NEW_RECORD:
+        if(resultCode != RESULT_OK)
+          break;
+
+        Region region = (Region) mLastSelectedRegionView.getTag();
+        Track track = (Track) mLastSelectedTrackView.getTag();
+
+        if(!region.hasSomeRecord()){
+          int bpm = data.getIntExtra(EXTRA_BPM, -1);
+          int beats = data.getIntExtra(EXTRA_BEATS, -1);
+          int beatLength = data.getIntExtra(EXTRA_BEAT_LENGTH, -1);
+
+          region.setBpm(bpm);
+          region.setBeats(beats);
+          region.setBeatLength(beatLength);
+        }
+
+        File file = (File) data.getSerializableExtra(EXTRA_RECORD_FILE);
+
+        record = new Record(file);
+        track.addRecord(record);
+
+        createRecordView(mLastSelectedTrackView, record);
+
+        mMusicCompositionRepository.saveMusicComposition(mMusicComposition);
+
+        break;
+
+      case REQUEST_TEXT_NOTE:
+        if(resultCode != RESULT_OK)
+          break;
+
+        String textNote = data.getStringExtra(EXTRA_NOTE_TEXT);
+        record = (Record) mLastSelectedRecordView.getTag();
+        record.setTextNote(textNote);
+
+        break;
     }
-
-    if(requestCode != REQUEST_NEW_RECORD)
-      return;
-
-    if(resultCode != RESULT_OK)
-      return;
-
-    Region region = (Region) mLastSelectedRegionView.getTag();
-    Track track = (Track) mLastSelectedTrackView.getTag();
-
-    if(!region.hasSomeRecord()){
-      int bpm = data.getIntExtra(EXTRA_BPM, -1);
-      int beats = data.getIntExtra(EXTRA_BEATS, -1);
-      int beatLength = data.getIntExtra(EXTRA_BEAT_LENGTH, -1);
-
-      region.setBpm(bpm);
-      region.setBeats(beats);
-      region.setBeatLength(beatLength);
-    }
-
-    File file = (File) data.getSerializableExtra(EXTRA_RECORD_FILE);
-
-    Record record = new Record(file);
-    track.addRecord(record);
-
-    createRecordView(mLastSelectedTrackView, record);
-
-    mMusicCompositionRepository.saveMusicComposition(mMusicComposition);
   }
 
   @Click(R.id.fab) void onPlay(){
