@@ -23,4 +23,10 @@
     <string name="disable_grid_changing">Disable grid changing</string>
     <string name="menu">menu</string>
     <string name="action_delete">Delete</string>
+    <string name="add_track">Add track</string>
+    <string name="add_record">Add record</string>
+    <string name="remove_record">Remove record</string>
+    <string name="action_cut_record">Cut record</string>
+    <string name="action_add_region">Add new region</string>
+    <string name="add_region">Add region</string>
 </resources>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="5dp"
+    android:layout_marginBottom="5dp"
+    android:layout_marginLeft="0dp"
+    android:layout_marginRight="0dp"
+    android:minHeight="50dp"
+    android:gravity="center_vertical"
+    android:padding="5dp"
+    android:background="@android:color/darker_gray">
+
+    <ImageButton
+        android:id="@+id/add_record"
+        android:src="@android:drawable/ic_menu_add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/add_record"/>
+
+    <ImageButton
+        android:id="@+id/remove_track"
+        android:src="@android:drawable/ic_menu_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/remove_record"/>
+
+</LinearLayout>

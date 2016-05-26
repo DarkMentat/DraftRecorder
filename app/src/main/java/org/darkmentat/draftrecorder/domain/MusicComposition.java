@@ -36,6 +36,14 @@ public class MusicComposition implements Serializable {
     public void removeTrack(int position){
       mTracks.remove(position);
     }
+    public void removeTrack(Track track){
+      for(Map.Entry<Integer, Track> entry : mTracks.entrySet()){
+        if(entry.getValue().equals(track)){
+          mTracks.remove(entry.getKey());
+          break;
+        }
+      }
+    }
     public Map<Integer, Track> getTracks(){
       return mTracks;
     }

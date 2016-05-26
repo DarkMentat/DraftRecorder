@@ -1,10 +1,13 @@
 package org.darkmentat.draftrecorder.ui.activities;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import org.androidannotations.annotations.AfterViews;
@@ -29,10 +32,6 @@ import java.io.File;
 import java.util.Collection;
 import java.util.List;
 
-import static android.view.Gravity.CENTER_VERTICAL;
-import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
-import static android.widget.LinearLayout.HORIZONTAL;
-import static android.widget.LinearLayout.VERTICAL;
 import static org.darkmentat.draftrecorder.ui.activities.CutRecordActivity.EXTRA_LAST_SECOND;
 import static org.darkmentat.draftrecorder.ui.activities.CutRecordActivity.EXTRA_RECORD;
 import static org.darkmentat.draftrecorder.ui.activities.CutRecordActivity.EXTRA_START_CUT_SECONDS;
@@ -58,8 +57,8 @@ public class MusicCompositionActivity extends AppCompatActivity implements Playe
   private MusicCompositionRepository mMusicCompositionRepository;
 
   private WaveformView mLastSelectedRecordView = null;
-  private LinearLayout mLastSelectedRegionView = null;
-  private LinearLayout mLastSelectedTrackView = null;
+  private ViewGroup mLastSelectedRegionView = null;
+  private ViewGroup mLastSelectedTrackView = null;
 
   @ViewById(R.id.fab) FloatingActionButton mFab;
   @ViewById(R.id.toolbar) Toolbar mToolbar;
@@ -98,12 +97,12 @@ public class MusicCompositionActivity extends AppCompatActivity implements Playe
 
     for(Region region : regions){
 
-      LinearLayout regionView = createRegionView(region);
+      ViewGroup regionView = createRegionView(region);
 
       Collection<Track> tracks = region.getTracks().values();
 
       for(Track track : tracks){
-        LinearLayout trackView = createTrackView(regionView, track);
+        ViewGroup trackView = createTrackView(regionView, track);
 
         List<Record> records = track.getRecords();
 
@@ -113,53 +112,87 @@ public class MusicCompositionActivity extends AppCompatActivity implements Playe
       }
     }
 
-    mLastSelectedRegionView = (LinearLayout) mRegionContainer.getChildAt(0);
+    mLastSelectedRegionView = (ViewGroup) mRegionContainer.getChildAt(0);
   }
 
-  @OptionsItem(R.id.action_add_track) void onAddTrack(){
-    mLastSelectedRegionView = (LinearLayout) mRegionContainer.getChildAt(0);
+  @Click(R.id.add_region) @OptionsItem(R.id.action_add_region) void onAddRegion(){
 
-    Region region = (Region) mLastSelectedRegionView.getTag();
-    Track track = new Track();
-    region.addTrack(track);
+    Region region = new Region();
+    createRegionView(region);
+    mMusicComposition.addRegion(region);
 
     mMusicCompositionRepository.saveMusicComposition(mMusicComposition);
 
-    createTrackView(mLastSelectedRegionView, track);
   }
 
-  private LinearLayout createRegionView(Region region) {
-    LinearLayout regionView = new LinearLayout(this);
-    regionView.setLayoutParams(new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT){{setMargins(0,5,0,5);}});
-    regionView.setOrientation(VERTICAL);
+  private ViewGroup createRegionView(Region region) {
+    CardView regionView = (CardView) getLayoutInflater().inflate(R.layout.view_region, null);
+    regionView.setMinimumWidth(mRegionContainer.getRootView().getMeasuredWidth()-54);
     regionView.setTag(region);
 
+    regionView.findViewById(R.id.menu).setOnClickListener(v -> showRegionViewPopUp(v, regionView));
     mRegionContainer.addView(regionView);
+
+    mLastSelectedRegionView = regionView;
 
     return regionView;
   }
-  private LinearLayout createTrackView(final LinearLayout regionView, final Track track){
-    final LinearLayout trackView = new LinearLayout(this);
-    trackView.setLayoutParams(new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT){{setMargins(0,5,0,5);}});
-    trackView.setMinimumHeight(100);
-    trackView.setMinimumWidth(regionView.getRootView().getRootView().getMeasuredWidth());
-    trackView.setOrientation(HORIZONTAL);
-    trackView.setGravity(CENTER_VERTICAL);
-    trackView.setPadding(5,5,5,5);
-    trackView.setBackgroundColor(Color.LTGRAY);
+  private boolean showRegionViewPopUp(View view, ViewGroup regionView){
+    PopupMenu popupMenu = new PopupMenu(this, view);
+    popupMenu.inflate(R.menu.menu_region_view);
 
-    trackView.setOnLongClickListener(v -> {
+    popupMenu.setOnMenuItemClickListener(item -> {
+      switch (item.getItemId()){
+
+        case R.id.action_add_track:
+          Region region = (Region) regionView.getTag();
+          Track track = new Track();
+          region.addTrack(track);
+          createTrackView(regionView, track);
+
+          mMusicCompositionRepository.saveMusicComposition(mMusicComposition);
+
+          return true;
+
+        case R.id.action_delete:
+
+          region = ((Region) regionView.getTag());
+          mMusicComposition.removeRegion(region);
+          mRegionContainer.removeView(regionView);
+
+          mMusicCompositionRepository.saveMusicComposition(mMusicComposition);
+          return true;
+
+        default:
+          return false;
+      }
+    });
+    popupMenu.show();
+
+    return true;
+  }
+  private ViewGroup createTrackView(final ViewGroup regionView, final Track track){
+    final ViewGroup trackView = (ViewGroup) getLayoutInflater().inflate(R.layout.view_track, null);
+    trackView.setMinimumWidth(regionView.getRootView().getMeasuredWidth()-54);
+    trackView.findViewById(R.id.add_record).setOnClickListener(v -> {
       mLastSelectedTrackView = trackView;
 
       Region region = (Region) regionView.getTag();
 
       startCaptureSoundActivity(region);
-      return true;
+    });
+    trackView.findViewById(R.id.remove_track).setOnClickListener(v -> {
+      Region region = (Region) regionView.getTag();
+
+      region.removeTrack(track);
+      ((ViewGroup) regionView.findViewById(R.id.tracks)).removeView(trackView);
+
+      mMusicCompositionRepository.saveMusicComposition(mMusicComposition);
     });
 
     trackView.setTag(track);
 
-    regionView.addView(trackView);
+    ((ViewGroup) regionView.findViewById(R.id.tracks)).addView(trackView);
 
     return trackView;
   }
@@ -183,7 +216,7 @@ public class MusicCompositionActivity extends AppCompatActivity implements Playe
     intent.startForResult(REQUEST_NEW_RECORD);
   }
 
-  private void createRecordView(LinearLayout trackView, Record record){
+  private void createRecordView(ViewGroup trackView, Record record){
     WaveformView recordView = new WaveformView(this);
     recordView.setLayoutParams(new LinearLayout.LayoutParams((int) (record.getCutDurationSeconds() * 100), 180){{setMargins(0,0,5,0);}});
     //recordView.setBackgroundColor(Color.DKGRAY);
@@ -197,16 +230,38 @@ public class MusicCompositionActivity extends AppCompatActivity implements Playe
     recordView.setSamples(record.getSamples());
     recordView.setTempo(record.getBpm(), record.getBeats(), record.getBeatLength());
 
-    recordView.setOnLongClickListener(v -> {
+    recordView.setOnLongClickListener(v -> showRecordViewPopUp(trackView, recordView, record));
+
+    trackView.addView(recordView, 0);
+  }
+
+  private boolean showRecordViewPopUp(ViewGroup trackView, WaveformView recordView, Record record){
+    PopupMenu popupMenu = new PopupMenu(this, recordView);
+    popupMenu.inflate(R.menu.menu_record_view);
+
+    popupMenu.setOnMenuItemClickListener(item -> {
+      switch (item.getItemId()){
+        case R.id.action_cut_record:
           mLastSelectedRecordView = recordView;
           CutRecordActivity_.intent(this)
               .extra(EXTRA_RECORD, record)
               .startForResult(REQUEST_CUT_RECORD);
           return true;
-        }
-    );
+        case R.id.action_delete:
+          Track track = (Track) trackView.getTag();
 
-    trackView.addView(recordView);
+          track.removeRecord(record);
+          trackView.removeView(recordView);
+
+          mMusicCompositionRepository.saveMusicComposition(mMusicComposition);
+          return true;
+        default:
+          return false;
+      }
+    });
+    popupMenu.show();
+
+    return true;
   }
 
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
